@@ -20,7 +20,6 @@ namespace Firewatch.Domain.Entities
 
         public PriorityLevel Priority { get; set; }
 
-
         public TodoList List { get; set; }
     }
 }

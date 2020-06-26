@@ -6,4 +6,9 @@
     <AssemblyName>Firewatch.Domain</AssemblyName>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    <PackageReference Include="TeixeiraSoftware.Finance.Currency" Version="4.1.0" />
+  </ItemGroup>
+
 </Project>
