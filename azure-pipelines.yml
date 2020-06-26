@@ -19,14 +19,10 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    useGlobalJson: true
-
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
+    projects: '**/*.csproj'
     arguments: '$(buildConfiguration)'
     
 - task: DotNetCoreCLI@2
