@@ -17,13 +17,13 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  buildPlatform: 'Any CPU'
 
 steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: '**/*.csproj'
-    arguments: '$(buildConfiguration)'
+    configuration: '$(buildConfiguration)'
     
 - task: DotNetCoreCLI@2
   inputs:
