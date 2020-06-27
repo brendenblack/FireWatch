@@ -29,6 +29,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
+    modifyOutputPath: true
     projects: 'src/WebUI/WebUI.csproj'
     arguments: '--self-contained --runtime win-x86 --configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
     zipAfterPublish: true
