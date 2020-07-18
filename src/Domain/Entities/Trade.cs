@@ -1,92 +1,90 @@
-﻿using Firewatch.Domain.Common;
+﻿using Firewatch.Domain.Enums;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace Firewatch.Domain.Entities
 {
-    public class Trade : AuditableEntity
+    /// <summary>
+    /// A trade represents a series of <see cref="TradeExecution"/>s that are related on a single ticker symbol.
+    /// </summary>
+    public class Trade
     {
-        public Trade() { }
+        private Trade() { }
 
-        public Trade(
-            Person owner,
-            TradeActions action,
-            DateTime date,
-            [NotNull] string symbol,
-            decimal quantity,
-            [NotNull] Cost unitPrice,
-            Cost commissions,
-            Cost fees,
-            IEnumerable<string> exchanges = null)
+        public Trade(string symbol)
         {
-            OwnerId = owner.Id;
-            Owner = owner;
-            Action = action;
-            Date = date;
-            Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
-            Quantity = quantity;
-            UnitPrice = unitPrice;
-            //Exchanges = (exchanges == null) ? exchanges.ToHashSet() : new HashSet<string>();
-            Commissions = commissions ?? new Cost();
-            Fees = fees ?? new Cost();
+            this.Symbol = symbol;
         }
 
-        public int Id { get; set; }
+        public DateTime Open => (Executions.Count() > 0) ? Executions.Select(e => e.Date).Min() : DateTime.MinValue;
 
-        public string OwnerId { get; private set; }
+        public DateTime Close => (Executions.Count() > 0) ? Executions.Select(e => e.Date).Max() : DateTime.MinValue;
 
-        public Person Owner { get; private set; }
+        public TradePositionStatus Status => (PositionSize == 0) ? TradePositionStatus.CLOSED : TradePositionStatus.OPEN;
 
-        public DateTime Date { get; private set; }
+        public decimal PositionSize => Executions.Select(e => e.Quantity).Sum();
 
-        public TradeActions Action { get; private set; }
+        public int ExecutionCount => Executions.Count();
 
-        public string Symbol { get; private set; }
+        public decimal Volume => (Executions.Count() == 0) ? 0 : Executions.Select(e => Math.Abs(e.Quantity)).Sum();
 
-        public decimal Quantity { get; private set; }
-
-        public IReadOnlyCollection<string> Exchanges { get; private set; } = new HashSet<string>();
-
-        public Cost UnitPrice { get; private set; }
-
-        public decimal Total
+        /// <summary>
+        /// Total returns from this trade, including fees and commissions.
+        /// </summary>
+        /// <remarks></remarks>
+        public decimal NetProfitAndLoss
         {
             get
             {
-                // TODO: handle sell to open and buy to close
-                if (Action == TradeActions.BUYTOOPEN)
+                decimal pnl = 0;
+
+                foreach (var exec in Executions)
                 {
-                    return Quantity * UnitPrice.Amount + (Fees.Amount * -1) + (Commissions.Amount * -1);
+                    // the product is negated because a buy order has a positive quantity, and a sell order has a negative quantity
+                    pnl += exec.UnitPrice.Amount * exec.Quantity * -1;
+                    pnl -= exec.Commissions.Amount;
+                    pnl -= exec.Fees.Amount;
                 }
-                else if (Action == TradeActions.SELLTOCLOSE)
-                {
-                    return Quantity * UnitPrice.Amount - Fees.Amount - Commissions.Amount;
-                }
-                else
-                {
-                    return -1;
-                }
+
+                return pnl;
             }
         }
 
-        public Cost Commissions { get; private set; } = new Cost();
-
-        public Cost Fees { get; private set; } = new Cost();
-
-        public IReadOnlyCollection<string> Tags { get; } = new HashSet<string>();
-
-        public void AddTag(string tag)
+        /// <summary>
+        /// Total returns from this trade, before fees and commissions.
+        /// </summary>
+        public decimal GrossProfitAndLoss
         {
-            ((HashSet<string>)this.Tags).Add(tag);
+            get
+            {
+                decimal pnl = 0;
+
+                foreach (var exec in Executions)
+                {
+                    pnl += exec.UnitPrice.Amount * exec.Quantity * -1;
+                }
+
+                return pnl;
+            }
         }
 
-        public void RemoveTag(string tag)
+        public IEnumerable<TradeExecution> Executions { get; } = new List<TradeExecution>();
+
+        public void AddExecutions(params TradeExecution[] executions)
         {
-            ((HashSet<string>)this.Tags).Remove(tag);
+            foreach (var execution in executions)
+            {
+                if (!execution.Symbol.Equals(Symbol, StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                ((List<TradeExecution>)Executions).Add(execution);
+            }
         }
+
+        public string Symbol { get; }
     }
-
-    public enum TradeActions { BUYTOOPEN, BUYTOCLOSE, SELLTOOPEN, SELLTOCLOSE };
 }

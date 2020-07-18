@@ -1,11 +1,233 @@
-﻿{
-  "x-generator": "NSwag v13.3.0.0 (NJsonSchema v10.1.11.0 (Newtonsoft.Json v12.0.0.0))",
+{
+  "x-generator": "NSwag v13.6.2.0 (NJsonSchema v10.1.23.0 (Newtonsoft.Json v12.0.0.0))",
   "openapi": "3.0.0",
   "info": {
     "title": "Firewatch API",
     "version": "1.0.0"
   },
   "paths": {
+    "/api/accounts/{id}": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "operationId": "Accounts_Get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Investments": {
+      "post": {
+        "tags": [
+          "Investments"
+        ],
+        "operationId": "Investments_ImportTrades",
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ParseTradesModel"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParseAndImportTradesResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Investments"
+        ],
+        "operationId": "Investments_GetTrades",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTradesVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Investments/executions": {
+      "get": {
+        "tags": [
+          "Investments"
+        ],
+        "operationId": "Investments_GetExecutions",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeExecutionsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Investments/{accountNumber}/executions": {
+      "get": {
+        "tags": [
+          "Investments"
+        ],
+        "operationId": "Investments_GetExecutionsForAccount",
+        "parameters": [
+          {
+            "name": "accountNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TradeExecutionsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/TodoItems": {
       "post": {
         "tags": [
@@ -388,6 +610,182 @@
   },
   "components": {
     "schemas": {
+      "ParseAndImportTradesResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "duplicates": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "createdIds": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "ParseTradesModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "format": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "GetTradesVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "trades": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/TradeDto"
+            }
+          }
+        }
+      },
+      "TradeDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "open": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "close": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "unitPrice": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          },
+          "commissions": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          },
+          "fees": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          }
+        }
+      },
+      "CostModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "TradeExecutionsVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "executions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/TradeExecutionDto"
+            }
+          }
+        }
+      },
+      "TradeExecutionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "action": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "unitPrice": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          },
+          "commissions": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          },
+          "fees": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          }
+        }
+      },
       "CreateTodoItemCommand": {
         "type": "object",
         "additionalProperties": false,

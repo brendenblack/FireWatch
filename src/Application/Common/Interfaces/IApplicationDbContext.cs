@@ -11,6 +11,14 @@ namespace Firewatch.Application.Common.Interfaces
 
         DbSet<TodoItem> TodoItems { get; set; }
 
+        DbSet<Person> People { get;  }
+
+        DbSet<Account> Accounts { get; }
+
+        DbSet<ExpenseCategory> ExpenseCategories { get; }
+
+        DbSet<TradeExecution> TradeExecutions { get; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

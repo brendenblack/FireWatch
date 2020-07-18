@@ -1,0 +1,24 @@
+<form [formGroup]="importForm" novalidate (ngSubmit)="onSubmit()">
+    <div class="form-group">
+        <label for="exampleFormControlSelect1">Import format</label>
+        <select class="form-control" id="exampleFormControlSelect1" formControlName="format" onChange="onFormatChange($event)">
+            <option *ngFor="let opt of supportedFormats" [ngValue]="opt.value">{{ opt.display }}</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleFormControlFile1">Example file input</label>
+        <input 
+            type="file"
+            class="form-control-file"
+            id="exampleFormControlFile1"
+            
+            (change)="onFileChange($event)">
+      </div>
+      <button type="submit" class="btn btn-primary mb-2" [disabled]="!importForm.valid" >Import</button>
+</form>
+
+<div *ngIf="debug">
+    <h3>Contents <small>(debug)</small></h3>
+    <pre>{{ importForm.get('fileContents').value }}</pre>
+  </div>

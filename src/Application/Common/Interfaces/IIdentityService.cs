@@ -10,5 +10,7 @@ namespace Firewatch.Application.Common.Interfaces
         Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password);
 
         Task<Result> DeleteUserAsync(string userId);
+
+        Task<bool> IsUserInRole(string userId, string role);
     }
 }

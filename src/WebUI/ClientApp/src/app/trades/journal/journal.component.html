@@ -1,0 +1,34 @@
+<div *ngFor="let dateEntry of vm.dates" class="journal-date-container">
+    <h4>{{ dateEntry.date.format('dddd, MMMM Do, yyyy') }}</h4>
+    <p>Total trades: {{ dateEntry.totalTrades() }}</p>
+    <p>Total volume: {{ dateEntry.totalVolume() }}</p>
+    <p>Total fees: {{ dateEntry.totalFees() | currency: 'USD' }}</p>
+    <p>Total commissions: {{ dateEntry.totalCommissions() | currency: 'USD' }}</p>
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th scope="col">Symbol</th>
+                <th scope="col" class="text-right">Execs</th>
+                <th scope="col" class="text-right">Volume</th>
+                <th scope="col" class="text-right">P&L</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let symbolEntry of dateEntry.symbols">
+                <td>{{ symbolEntry.symbol }}</td>
+                <td class="text-right">{{ symbolEntry.executionCount() }}</td>
+                <td class="text-right">{{ symbolEntry.volume() }}</td>
+                <td class="text-right">{{ symbolEntry.profitAndLoss() | currency: 'USD' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+
+<!-- <div *ngFor="let item of vm | keyvalue">
+    <span>{{ item.key }}</span>
+    <div *ngFor="let symbol of item.value | keyvalue">
+        <span>{{ symbol.key }}</span>
+    </div>
+</div> -->

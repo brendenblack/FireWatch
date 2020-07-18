@@ -1,4 +1,5 @@
 ﻿using Firewatch.Application.Common.Interfaces;
+using Firewatch.Domain.Entities;
 using Firewatch.Infrastructure.Identity;
 using Firewatch.Infrastructure.Persistence;
 using Firewatch.WebUI;
@@ -13,6 +14,7 @@ using NUnit.Framework;
 using Respawn;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 [SetUpFixture]
@@ -84,6 +86,10 @@ public class Testing
         return await mediator.Send(request);
     }
 
+    /// <summary>
+    /// Creates a user with username test@local and returns the created id. Will also create a <see cref="Person"/> record.
+    /// </summary>
+    /// <returns></returns>
     public static async Task<string> RunAsDefaultUserAsync()
     {
         return await RunAsUserAsync("test@local", "Testing1234!");
@@ -100,6 +106,11 @@ public class Testing
         var result = await userManager.CreateAsync(user, password);
 
         _currentUserId = user.Id;
+
+        //await AddAsync(new Person { Id = user.Id });
+        //var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+        //context.People.Add(new Person { Id = user.Id });
+        //await context.SaveChangesAsync(CancellationToken.None);
 
         return _currentUserId;
     }
@@ -120,6 +131,16 @@ public class Testing
         return await context.FindAsync<TEntity>(id);
     }
 
+    public static async Task<TEntity> FindAsync<TEntity>(string id)
+    where TEntity : class
+    {
+        using var scope = _scopeFactory.CreateScope();
+
+        var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+        return await context.FindAsync<TEntity>(id);
+    }
+
     public static async Task AddAsync<TEntity>(TEntity entity)
         where TEntity : class
     {
@@ -130,6 +151,14 @@ public class Testing
         context.Add(entity);
 
         await context.SaveChangesAsync();
+    }
+
+    public static ApplicationDbContext CreateScopedContext()
+    {
+        var scope = _scopeFactory.CreateScope();
+
+        var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+        return context;
     }
 
     [OneTimeTearDown]

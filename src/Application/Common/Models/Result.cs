@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Firewatch.Application.Common.Models
@@ -8,10 +9,14 @@ namespace Firewatch.Application.Common.Models
         internal Result(bool succeeded, IEnumerable<string> errors)
         {
             Succeeded = succeeded;
+            IsSuccess = succeeded;
             Errors = errors.ToArray();
         }
 
+        [Obsolete("Use IsSuccess instead.")]
         public bool Succeeded { get; set; }
+
+        public bool IsSuccess { get; set; }
 
         public string[] Errors { get; set; }
 
@@ -21,6 +26,11 @@ namespace Firewatch.Application.Common.Models
         }
 
         public static Result Failure(IEnumerable<string> errors)
+        {
+            return new Result(false, errors);
+        }
+
+        public static Result Failure(params string[] errors)
         {
             return new Result(false, errors);
         }

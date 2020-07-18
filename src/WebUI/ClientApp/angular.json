@@ -155,5 +155,8 @@
       }
     }
   },
-  "defaultProject": "Firewatch.WebUI"
+  "defaultProject": "Firewatch.WebUI",
+  "cli": {
+    "analytics": false
+  }
 }

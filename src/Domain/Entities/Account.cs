@@ -18,8 +18,12 @@ namespace Firewatch.Domain.Entities
         public int Id { get; set; }
 
         /// <summary>
-        /// A unique identifier for this account, by default the account number.
+        /// An alphanumeric value that identifies this specific account in the institution that it was created. 
         /// </summary>
+        /// <remarks>
+        /// This value will not necessarily be unique in the system, as it is assigned from any number of external agents. 
+        /// Use <see cref="Id"/> for a guaranteed unique identifier.
+        /// </remarks>
         public string AccountNumber { get; protected set; }
 
         /// <summary>
@@ -44,7 +48,11 @@ namespace Firewatch.Domain.Entities
 
         public void AddTransaction(DateTime date, string[] descriptions, decimal amount, string currencyCode)
         {
-            var transaction = new Transaction(this, date, amount, currencyCode);
+            var transaction = new Transaction(this, date, amount, currencyCode)
+            {
+                Descriptions = descriptions
+            };
+
             Transactions.Add(transaction);
         }
 

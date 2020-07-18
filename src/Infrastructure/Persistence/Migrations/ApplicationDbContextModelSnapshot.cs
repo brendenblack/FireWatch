@@ -15,9 +15,134 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.0")
+                .HasAnnotation("ProductVersion", "3.1.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AccountNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AccountType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("BalanceOffset")
+                        .HasColumnType("decimal(38,2)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OwnerId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.ToTable("Accounts");
+
+                    b.HasDiscriminator<string>("AccountType").HasValue("Account");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Expense");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.ExpenseCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Icon")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Label")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("MonthlyBudget")
+                        .HasColumnType("decimal(38,2)");
+
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int?>("ParentCategoryId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("ParentCategoryId");
+
+                    b.ToTable("ExpenseCategories");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Person", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("People");
+                });
 
             modelBuilder.Entity("Firewatch.Domain.Entities.TodoItem", b =>
                 {
@@ -95,6 +220,112 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TodoLists");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.TradeExecution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Action")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreationMethod")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Exchanges")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Quantity")
+                        .HasColumnType("decimal(30,6)");
+
+                    b.Property<string>("Symbol")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("TradeExecutions");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("AccountId1")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(30,2)");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Descriptions")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("HashCode")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("AccountId1");
+
+                    b.ToTable("Transaction");
                 });
 
             modelBuilder.Entity("Firewatch.Infrastructure.Identity.ApplicationUser", b =>
@@ -379,6 +610,78 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("Firewatch.Domain.Entities.BankAccount", b =>
+                {
+                    b.HasBaseType("Firewatch.Domain.Entities.Account");
+
+                    b.Property<int>("InstitutionAccountNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InstitutionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TransitNumber")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("chk");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.BrokerageAccount", b =>
+                {
+                    b.HasBaseType("Firewatch.Domain.Entities.Account");
+
+                    b.Property<string>("Designation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Institution")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("broker");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.CashAccount", b =>
+                {
+                    b.HasBaseType("Firewatch.Domain.Entities.Account");
+
+                    b.HasDiscriminator().HasValue("cash");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.CreditCardAccount", b =>
+                {
+                    b.HasBaseType("Firewatch.Domain.Entities.Account");
+
+                    b.HasDiscriminator().HasValue("cc");
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Account", b =>
+                {
+                    b.HasOne("Firewatch.Domain.Entities.Person", "Owner")
+                        .WithMany("Accounts")
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Expense", b =>
+                {
+                    b.HasOne("Firewatch.Domain.Entities.ExpenseCategory", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.ExpenseCategory", b =>
+                {
+                    b.HasOne("Firewatch.Domain.Entities.Person", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+
+                    b.HasOne("Firewatch.Domain.Entities.ExpenseCategory", "ParentCategory")
+                        .WithMany("ChildrenCategories")
+                        .HasForeignKey("ParentCategoryId");
+                });
+
             modelBuilder.Entity("Firewatch.Domain.Entities.TodoItem", b =>
                 {
                     b.HasOne("Firewatch.Domain.Entities.TodoList", "List")
@@ -386,6 +689,100 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.TradeExecution", b =>
+                {
+                    b.HasOne("Firewatch.Domain.Entities.BrokerageAccount", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("Firewatch.Domain.Entities.Price", "Commissions", b1 =>
+                        {
+                            b1.Property<int>("TradeExecutionId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnName("CommissionsAmount")
+                                .HasColumnType("decimal(30,2)");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasColumnName("CommissionsCurrency")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("TradeExecutionId");
+
+                            b1.ToTable("TradeExecutions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeExecutionId");
+                        });
+
+                    b.OwnsOne("Firewatch.Domain.Entities.Price", "Fees", b1 =>
+                        {
+                            b1.Property<int>("TradeExecutionId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnName("FeesAmount")
+                                .HasColumnType("decimal(30,2)");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasColumnName("FeesCurrency")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("TradeExecutionId");
+
+                            b1.ToTable("TradeExecutions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeExecutionId");
+                        });
+
+                    b.OwnsOne("Firewatch.Domain.Entities.Price", "UnitPrice", b1 =>
+                        {
+                            b1.Property<int>("TradeExecutionId")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnName("UnitPriceAmount")
+                                .HasColumnType("decimal(30,2)");
+
+                            b1.Property<string>("Currency")
+                                .IsRequired()
+                                .HasColumnName("UnitPriceCurrency")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("TradeExecutionId");
+
+                            b1.ToTable("TradeExecutions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("TradeExecutionId");
+                        });
+                });
+
+            modelBuilder.Entity("Firewatch.Domain.Entities.Transaction", b =>
+                {
+                    b.HasOne("Firewatch.Domain.Entities.Account", null)
+                        .WithMany("Transactions")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Firewatch.Domain.Entities.Account", "Account")
+                        .WithMany()
+                        .HasForeignKey("AccountId1");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

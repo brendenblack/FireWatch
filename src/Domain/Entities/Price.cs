@@ -2,17 +2,17 @@
 
 namespace Firewatch.Domain.Entities
 {
-    public class Cost
+    public class Price
     {
-        public Cost() { }
+        public Price() { }
 
-        public Cost(decimal amount, string currencyCode)
+        public Price(decimal amount, string currencyCode)
         {
             this.Amount = amount;
             this.Currency = Currency.ByAlphabeticCode(currencyCode);
         }
 
-        public Cost(decimal amount, Currency currency)
+        public Price(decimal amount, Currency currency)
         {
             this.Amount = amount;
             this.Currency = currency;

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Firewatch.Domain.Constants;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,6 +9,6 @@ namespace Firewatch.Domain.Entities
     {
         public CashAccount() { }
         public CashAccount(Person owner) : base(owner) { }
-        public override string AccountType { get; protected set; } = "cash";
+        public override string AccountType { get; protected set; } = AccountConstants.CASH;
     }
 }

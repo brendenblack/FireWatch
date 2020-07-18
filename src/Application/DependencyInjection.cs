@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Firewatch.Application.Common.Behaviours;
+using Firewatch.Application.Common.Interfaces;
+using Firewatch.Application.Common.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,8 @@ namespace Firewatch.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+
+            services.AddTransient<INewUserService, NewUserService>();
 
             return services;
         }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Firewatch.Domain.Constants;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -51,7 +52,7 @@ namespace Firewatch.Domain.Entities
             DisplayName = InstitutionAccountNumber.ToString("D7");
         }
 
-        public override string AccountType { get; protected set; } = "bankaccount";
+        public override string AccountType { get; protected set; } = AccountConstants.CHEQUING; // todo: genericize and add a designation field
 
         /// <summary>
         /// A code that identifies the financial institution that holds the account.

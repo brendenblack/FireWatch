@@ -7,5 +7,7 @@ namespace Firewatch.Domain.Entities
     public class Person
     {
         public string Id { get; set; }
+
+        public virtual ICollection<Account> Accounts { get; set; }
     }
 }

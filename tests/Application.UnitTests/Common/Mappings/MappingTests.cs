@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Firewatch.Application.Common.Mappings;
+using Firewatch.Application.Investments.Queries.ParseTrades;
 using Firewatch.Application.TodoLists.Queries.GetTodos;
 using Firewatch.Domain.Entities;
 using NUnit.Framework;
@@ -31,6 +32,7 @@ namespace Firewatch.Application.UnitTests.Common.Mappings
         [Test]
         [TestCase(typeof(TodoList), typeof(TodoListDto))]
         [TestCase(typeof(TodoItem), typeof(TodoItemDto))]
+        [TestCase(typeof(TradeExecution), typeof(ParsedTradeDto))]
         public void ShouldSupportMappingFromSourceToDestination(Type source, Type destination)
         {
             var instance = Activator.CreateInstance(source);

@@ -34,6 +34,14 @@ namespace Firewatch.Infrastructure.Persistence
 
         public DbSet<TodoItem> TodoItems { get; set; }
 
+        public DbSet<Person> People { get; set; }
+
+        public DbSet<Account> Accounts { get; set; }
+
+        public DbSet<ExpenseCategory> ExpenseCategories { get; set; }
+
+        public DbSet<TradeExecution> TradeExecutions { get; set; }
+
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (var entry in ChangeTracker.Entries<AuditableEntity>())

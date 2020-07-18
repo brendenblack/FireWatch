@@ -38,6 +38,7 @@ namespace Firewatch.Infrastructure
             services.AddTransient<IDateTime, DateTimeService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
+            services.AddTransient<ITradeParserService, TradeLogTradeParserService>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

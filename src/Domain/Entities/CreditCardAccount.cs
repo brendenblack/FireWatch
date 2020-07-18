@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Firewatch.Domain.Constants;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -18,7 +19,7 @@ namespace Firewatch.Domain.Entities
             DisplayName = maskedNumber;
         }
 
-        public override string AccountType { get; protected set; } = "creditcard";
+        public override string AccountType { get; protected set; } = AccountConstants.CREDIT_CARD;
 
         /// <summary>
         /// Masks the middle 8 digits of a Visa number to ensure we are never saving the full credit card number but are still
