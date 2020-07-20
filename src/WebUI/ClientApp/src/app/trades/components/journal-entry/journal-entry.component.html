@@ -1,0 +1,23 @@
+<h4>{{ journal.date.format('dddd, MMMM Do, yyyy') }}</h4>
+<div>Total trades: {{ journal.totalTrades() }}</div>
+<div>Total volume: {{ journal.totalVolume() }}</div>
+<div>Total fees: {{ journal.totalFees() | currency: 'USD' }}</div>
+<div>Total commissions: {{ journal.totalCommissions() | currency: 'USD' }}</div>
+<table class="table table-sm">
+    <thead>
+        <tr>
+            <th scope="col">Symbol</th>
+            <th scope="col" class="text-right">Execs</th>
+            <th scope="col" class="text-right">Volume</th>
+            <th scope="col" class="text-right">P&L</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let symbolEntry of journal.symbols">
+            <td>{{ symbolEntry.symbol }}</td>
+            <td class="text-right">{{ symbolEntry.executionCount() }}</td>
+            <td class="text-right">{{ symbolEntry.volume() }}</td>
+            <td class="text-right">{{ symbolEntry.profitAndLoss(true) | currency: 'USD' }}</td>
+        </tr>
+    </tbody>
+</table>

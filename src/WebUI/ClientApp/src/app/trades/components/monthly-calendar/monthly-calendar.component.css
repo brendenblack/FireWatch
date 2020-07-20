@@ -1,0 +1,42 @@
+.calendar {
+}
+
+.calendar .month-names {
+    text-align: center;
+    padding: 2px,
+}
+
+.calendar .day-names {
+    text-align: center;
+}
+
+.calendar .cell {
+    height: 64px;
+    width: 64px;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    margin: 0;
+    padding: 6px;
+}
+
+.calendar-sm .cell {
+    height: 24px;
+    width: 24px;
+    padding: 4px;
+}
+
+.calendar .win {
+    background-color: green;
+}
+
+.calendar .loss {
+    background-color: red;
+}
+
+.calendar .draw {
+    background-color: lightgray;
+}
+
+.calendar .weekend {
+    background-color: gray;
+}

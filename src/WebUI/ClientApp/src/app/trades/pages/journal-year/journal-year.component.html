@@ -1,0 +1,11 @@
+  <div class="container" *ngIf="journalEntries.length > 0">
+      <div class="row">
+        <div  class="col-lg-3" *ngFor="let month of [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]">
+            <div class="calendar-thumb">
+                <a [routerLink]="['/trades/calendar/', 2020, (month+1) ]">
+                    <app-monthly-calendar [month]="month" [year]="2020" [journalEntries]="journalEntries" [small]="true"></app-monthly-calendar>
+                </a>
+            </div>
+        </div>
+      </div>
+  </div>    
