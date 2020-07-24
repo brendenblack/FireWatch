@@ -77,6 +77,7 @@ class CalendarCell {
     this.displayDate = (this.date === null) ? '' : this.date.getDate().toString();
 
     this.classesToApply.push('cell');
+    this.classesToApply.push('day');
 
     if (this.date === null) {
       this.classesToApply.push('invalid');

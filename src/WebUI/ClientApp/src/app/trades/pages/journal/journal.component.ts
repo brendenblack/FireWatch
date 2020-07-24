@@ -22,13 +22,22 @@ export class JournalComponent implements OnInit {
   debug = true;
 
   vm = new JournalViewModel();
+
+  journalEntries: JournalEntry[] = [];
   
   constructor(private investmentsClient: InvestmentsClient, private tradesService: TradesService) { 
   }
 
   ngOnInit(): void {
-      this.tradesService.fetchJournalForDates(new Date(new Date().setDate(new Date().getDate() - 7 )), new Date())
-        .subscribe(journal => console.log(journal));
+      const date = new Date(2020,2,16);
+      this.tradesService.fetchJournalForDates(date, date)
+      .subscribe(journal => { 
+        console.log(journal);
+        this.journalEntries = journal;
+      });
+      
+      // this.tradesService.fetchJournalForDates(new Date(new Date().setDate(new Date().getDate() - 7 )), new Date())
+      //   .subscribe(journal => console.log(journal));
   }
 
   // fetchExecutionsBetween(from: Date, to: Date) {

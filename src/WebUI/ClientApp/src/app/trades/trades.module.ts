@@ -11,13 +11,14 @@ import { MonthlyCalendarComponent } from './components/monthly-calendar/monthly-
 import { CalendarModule } from 'angular-calendar';
 import { JournalMonthComponent } from './pages/journal-month/journal-month.component';
 import { JournalYearComponent } from './pages/journal-year/journal-year.component';
+import { JournalDayComponent } from './pages/journal-day/journal-day.component';
 
 
 @NgModule({
   declarations: [
     JournalComponent, 
     ImportComponent, 
-    ImportTradelogComponent, JournalEntryComponent, JournalYearComponent, MonthlyCalendarComponent, JournalMonthComponent
+    ImportTradelogComponent, JournalEntryComponent, JournalYearComponent, MonthlyCalendarComponent, JournalMonthComponent, JournalDayComponent
   ],
   imports: [
     CommonModule,

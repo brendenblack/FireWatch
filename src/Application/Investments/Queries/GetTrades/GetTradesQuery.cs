@@ -56,7 +56,7 @@ namespace Firewatch.Application.Investments.Queries.GetTrades
                 trades.Add(trade);
                 foreach (var execution in group.Executions)
                 {
-                    if (trade.Executions.Count() == 0 || trade.Status == TradePositionStatus.OPEN)
+                    if (trade.Executions.Count() == 0 || trade.Status == TradeStatus.OPEN)
                     {
                         trade.AddExecutions(execution);
                     }

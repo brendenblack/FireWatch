@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import * as moment from 'moment';
 import { TradesService } from '../../services/tradesService';
 import { JournalEntry } from '../../models/journal';
 
@@ -30,5 +31,12 @@ export class JournalMonthComponent implements OnInit {
   year: number;
   month: number;
 
+
   journalEntries: JournalEntry[] = [];
+
+  get mtdPnl(): number {
+    return (this.journalEntries.length > 0 ) ? this.journalEntries
+      .map(e => e.totalProfitAndLoss(true))
+      .reduce((a, b) => a + b) : 0;
+  }
 }

@@ -35,10 +35,27 @@ export class JournalYearComponent implements OnInit {
 
   journalEntries: JournalEntry[] = [];
 
+  get ytdPnl(): number {
+    return (this.journalEntries.length > 0)
+      ? this.journalEntries.map(j => j.totalProfitAndLoss(true)).reduce((a, b) => a + b)
+      : 0;
+  }
+
   getJournalEntriesForMonth(month: number): JournalEntry[] {
     const months = [ 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec' ];
     const entries = this.journalEntries.filter(e => e.date.month() === month);
     console.log(`Fetching journal entries for ${months[month]}`, entries);
     return entries;
+  }
+
+  monthlyPnl(month: number): number {
+    if (this.journalEntries.length === 0) {
+      return 0;
+    }
+    
+    return this.journalEntries
+      .filter(e => e.date.month() === month)
+      .map(j => j.totalProfitAndLoss(true))
+      .reduce((a, b) => a + b, 0);
   }
 }

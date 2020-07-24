@@ -1,6 +1,7 @@
 ﻿using Firewatch.Application.Investments.Commands.ParseAndImportTrades;
 using Firewatch.Domain.Constants;
 using Firewatch.Domain.Entities;
+using Firewatch.Domain.Enums;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -40,7 +41,7 @@ namespace Firewatch.Application.IntegrationTests.Investments.Commands
             //var owner = await FindAsync<Person>(userId);
             var contents = ReadLocalTestFile("U3111111_20200316_20200501.tlg");
             // STK_TRD|67428140|AAL|AMERICAN AIRLINES GROUP INC|ISLAND,BATS,DARK,ARCA|BUYTOOPEN|O|20200422|10:16:12|USD|331.00|1.00|10.596979|3507.60|-1.655|1.00
-            await AddAsync(new TradeExecution(new BrokerageAccount(new Person { Id = userId }, "U3111111"), TradeConstants.BUY_TO_OPEN, new DateTime(2020, 04, 22, 10, 16, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
+            await AddAsync(new TradeExecution(new BrokerageAccount(new Person { Id = userId }, "U3111111"), TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, new DateTime(2020, 04, 22, 10, 16, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
             var command = new ParseAndImportTradesCommand
             {
                 OwnerId = userId,

@@ -26,7 +26,7 @@ namespace Firewatch.Infrastructure.Persistence.Configurations
                    db => JsonConvert.DeserializeObject<List<string>>(db))
                .Metadata.SetValueComparer(stringListComparer);
 
-            builder.Property(c => c.Exchanges)
+            builder.Property(c => c.Routes)
                .HasConversion(
                    model => JsonConvert.SerializeObject(model, Formatting.None),
                    db => JsonConvert.DeserializeObject<List<string>>(db))

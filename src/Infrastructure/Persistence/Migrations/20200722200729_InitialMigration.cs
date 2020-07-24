@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Firewatch.Infrastructure.Persistence.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -107,36 +107,6 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TodoLists", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TradeExecutions",
-                columns: table => new
-                {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreatedBy = table.Column<string>(nullable: true),
-                    Created = table.Column<DateTime>(nullable: false),
-                    LastModifiedBy = table.Column<string>(nullable: true),
-                    LastModified = table.Column<DateTime>(nullable: true),
-                    OwnerId = table.Column<string>(nullable: true),
-                    Date = table.Column<DateTime>(nullable: false),
-                    Action = table.Column<string>(nullable: true),
-                    Symbol = table.Column<string>(nullable: true),
-                    Quantity = table.Column<decimal>(type: "decimal(30,6)", nullable: false),
-                    Exchanges = table.Column<string>(nullable: true),
-                    UnitPriceAmount = table.Column<decimal>(type: "decimal(30,2)", nullable: true),
-                    UnitPriceCurrency = table.Column<string>(nullable: true),
-                    CommissionsAmount = table.Column<decimal>(type: "decimal(30,2)", nullable: true),
-                    CommissionsCurrency = table.Column<string>(nullable: true),
-                    FeesAmount = table.Column<decimal>(type: "decimal(30,2)", nullable: true),
-                    FeesCurrency = table.Column<string>(nullable: true),
-                    Tags = table.Column<string>(nullable: true),
-                    CreationMethod = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TradeExecutions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -336,6 +306,45 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TradeExecutions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedBy = table.Column<string>(nullable: true),
+                    Created = table.Column<DateTime>(nullable: false),
+                    LastModifiedBy = table.Column<string>(nullable: true),
+                    LastModified = table.Column<DateTime>(nullable: true),
+                    AccountId = table.Column<int>(nullable: false),
+                    Vehicle = table.Column<int>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    Action = table.Column<string>(nullable: true),
+                    Status = table.Column<int>(nullable: false),
+                    Symbol = table.Column<string>(nullable: true),
+                    Quantity = table.Column<decimal>(type: "decimal(30,6)", nullable: false),
+                    Routes = table.Column<string>(nullable: true),
+                    UnitPriceAmount = table.Column<decimal>(type: "decimal(30,2)", nullable: true),
+                    UnitPriceCurrency = table.Column<string>(nullable: true),
+                    CommissionsAmount = table.Column<decimal>(type: "decimal(30,2)", nullable: true),
+                    CommissionsCurrency = table.Column<string>(nullable: true),
+                    FeesAmount = table.Column<decimal>(type: "decimal(30,2)", nullable: true),
+                    FeesCurrency = table.Column<string>(nullable: true),
+                    Tags = table.Column<string>(nullable: true),
+                    CreationMethod = table.Column<string>(nullable: true),
+                    IsPartialExecution = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TradeExecutions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TradeExecutions_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Transaction",
                 columns: table => new
                 {
@@ -481,6 +490,11 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                 name: "IX_TodoItems_ListId",
                 table: "TodoItems",
                 column: "ListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TradeExecutions_AccountId",
+                table: "TradeExecutions",
+                column: "AccountId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Transaction_AccountId",

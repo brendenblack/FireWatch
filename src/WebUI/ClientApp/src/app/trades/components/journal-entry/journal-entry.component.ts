@@ -11,8 +11,18 @@ export class JournalEntryComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
+    this.expandedSymbols.includes
   }
 
   @Input() journal: JournalEntry;
 
+  expandedSymbols: string[] = [];
+
+  onSymbolClick(symbol: string) {
+    if (this.expandedSymbols.includes(symbol)) {
+      this.expandedSymbols = this.expandedSymbols.filter(s => s !== symbol);
+    } else {
+      this.expandedSymbols.push(symbol);
+    }
+  }
 }

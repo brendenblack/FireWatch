@@ -39,16 +39,63 @@ namespace Firewatch.Infrastructure.Services
             var records = ExtractRecords(contents);
             foreach (var record in records)
             {
+                if (record.TransactionType != "STK_TRD")
+                {
+                    continue;
+                }
+
                 var date = ConstructDateTime(record.Date, record.Time);
 
-                // TODO
-                var currency = "USD";
-                var unitPrice = new Price(record.UnitPrice, currency);
-                var commissions = new Price(record.Commissions, currency);
+                var unitPrice = new Price(record.UnitPrice, record.Currency);
+                var commissions = new Price(record.Commissions, record.Currency);
                 var fees = new Price();
 
-                var trade = new TradeExecution(account, record.Action, date, record.TickerSymbol, record.Quantity, unitPrice, commissions, fees);
-                
+                var routes = record.Routes.Split(',');
+                var codes = record.ActionIdentifiers.Split(';');
+                TradeStatus tradeStatus;
+                if (codes.Contains("O"))
+                {
+                    tradeStatus = TradeStatus.OPEN;
+                } 
+                else if (codes.Contains("C"))
+                {
+                    tradeStatus = TradeStatus.CLOSE;
+                }
+                else
+                {
+                    _logger.LogWarning("Unable to determine if trade was an open or close", codes);
+                    continue;
+                }
+
+                TradeVehicle vehicle;
+                switch (record.TransactionType)
+                {
+                    case "STK_TRD":
+                        vehicle = TradeVehicle.STOCK;
+                        break;
+                    case "OPT_TRD":
+                        vehicle = TradeVehicle.OPTION;
+                        break;
+                    default:
+                        continue;
+                }
+
+
+                bool isPartial = codes.Contains("P");
+
+                var trade = new TradeExecution(
+                    account, 
+                    record.Action, 
+                    tradeStatus, 
+                    date, 
+                    record.TickerSymbol, 
+                    record.Quantity, 
+                    unitPrice, 
+                    commissions,
+                    fees, 
+                    isPartial, 
+                    routes);
+
                 trades.Add(trade);
             }
 
@@ -57,22 +104,30 @@ namespace Firewatch.Infrastructure.Services
 
         public List<TradeLogRecord> ExtractRecords(string tradelog)
         {
-            string relevantContents = ExtractTransactions(tradelog);
+            string stockTrades = ExtractStockTrades(tradelog);
+            string optionTrades = ExtractOptionTrades(tradelog);
 
-            using (var reader = new StringReader(relevantContents))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            var tradeRecords = new List<TradeLogRecord>();
+
+            foreach (var trades in new[] { stockTrades, optionTrades })
             {
-                csv.Configuration.Delimiter = "|";
-                csv.Configuration.HasHeaderRecord = false;
+                using (var reader = new StringReader(trades))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    csv.Configuration.Delimiter = "|";
+                    csv.Configuration.HasHeaderRecord = false;
 
-                var records = csv.GetRecords<TradeLogRecord>().ToList();
+                    var records = csv.GetRecords<TradeLogRecord>().ToList();
 
-                _logger.LogDebug("Parsed {} records from {} TradeLog lines",
-                    records.Count,
-                    relevantContents.Split('\n').Length);
+                    _logger.LogDebug("Parsed {} records from {} TradeLog lines",
+                        records.Count,
+                        stockTrades.Split('\n').Length);
 
-                return records;
+                    tradeRecords.AddRange(records);
+                }
             }
+
+            return tradeRecords;           
         }
 
         public string ExtractAccountNumber(string tradelog)
@@ -97,18 +152,28 @@ namespace Firewatch.Infrastructure.Services
             return DateTime.ParseExact(input, "yyyyMMdd HH:mm:ss", CultureInfo.InvariantCulture);
         }
 
-        public string ExtractTransactions(string contents)
+        public string ExtractStockTrades(string contents)
+        {
+            return ExtractTransactions(contents, "STK_TRD");
+        }
+
+        public string ExtractTransactions(string contents, string transactionCode)
         {
             var lines = new List<string>();
             foreach (var line in contents.Split('\n'))
             {
-                if (line.StartsWith("STK_TRD"))
+                if (line.StartsWith(transactionCode))
                 {
                     lines.Add(line);
                 }
             }
 
             return string.Join('\n', lines);
+        }
+
+        public string ExtractOptionTrades(string contents)
+        {
+            return ExtractTransactions(contents, "OPT_TRD");
         }
     }
 
@@ -127,13 +192,13 @@ namespace Firewatch.Infrastructure.Services
         public string CompanyName { get; set; }
 
         [Index(4)]
-        public List<string> Routes { get; set; } = new List<string>();
+        public string Routes { get; set; }
 
         [Index(5)]
         public string Action { get; set; }
 
         [Index(6)]
-        public string ActionIdentifier { get; set; }
+        public string ActionIdentifiers { get; set; }
 
         [Index(7)]
         public string Date { get; set; }
@@ -165,3 +230,4 @@ namespace Firewatch.Infrastructure.Services
         }
     }
 }
+

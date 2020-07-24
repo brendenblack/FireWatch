@@ -4,6 +4,7 @@ using Firewatch.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Text;
 
 namespace Firewatch.Domain.Entities
@@ -14,25 +15,32 @@ namespace Firewatch.Domain.Entities
 
         public TradeExecution(
             BrokerageAccount account,
-            string action,
+            
+            string tradeAction,
+            TradeStatus tradeStatus,
             [NotNull] DateTime date,
             [NotNull] string symbol,
             decimal quantity,
             [NotNull] Price unitPrice,
             Price commissions,
             Price fees,
-            IEnumerable<string> exchanges = null)
+            bool isPartial = false,
+            IEnumerable<string> routes = null,
+            TradeVehicle vehicle = TradeVehicle.STOCK)
         {
             AccountId = account.Id;
             Account = account;
-            Action = action?.ToLower() ?? "unknown";
+            Vehicle = vehicle;
+            Status = tradeStatus;
+            Action = tradeAction?.ToLower() ?? "unknown";
             Date = date;
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
             Quantity = quantity;
             UnitPrice = unitPrice;
-            //Exchanges = (exchanges == null) ? exchanges.ToHashSet() : new HashSet<string>();
+            Routes = (routes == null) ? routes.ToHashSet() : new HashSet<string>();
             Commissions = commissions ?? new Price();
             Fees = fees ?? new Price();
+            IsPartialExecution = isPartial;
         }
 
         public int Id { get; set; }
@@ -40,6 +48,8 @@ namespace Firewatch.Domain.Entities
         public int AccountId { get; }
 
         public BrokerageAccount Account { get; }
+
+        public TradeVehicle Vehicle { get; private set; }
 
         public DateTime Date { get; private set; }
 
@@ -49,8 +59,7 @@ namespace Firewatch.Domain.Entities
         {
             get
             {
-                var action = Action.ToUpper();
-                if (action.Contains("SELL"))
+                if (Action.Contains("sell"))
                 {
                     return TradeAction.SELL;
                 }
@@ -61,11 +70,13 @@ namespace Firewatch.Domain.Entities
             }
         }
 
+        public TradeStatus Status { get; set; }
+
         public string Symbol { get; private set; }
 
         public decimal Quantity { get; private set; }
 
-        public IReadOnlyCollection<string> Exchanges { get; private set; } = new HashSet<string>();
+        public IReadOnlyCollection<string> Routes { get; private set; } = new HashSet<string>();
 
         public Price UnitPrice { get; private set; }
 
@@ -112,5 +123,10 @@ namespace Firewatch.Domain.Entities
         }
 
         public string CreationMethod { get; set; }
+
+        /// <summary>
+        /// Whether this execution was a partial fill by the platform.
+        /// </summary>
+        public bool IsPartialExecution { get; private set; } = false;
     }
 }

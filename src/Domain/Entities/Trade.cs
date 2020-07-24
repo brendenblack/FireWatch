@@ -22,9 +22,26 @@ namespace Firewatch.Domain.Entities
 
         public DateTime Close => (Executions.Count() > 0) ? Executions.Select(e => e.Date).Max() : DateTime.MinValue;
 
-        public TradePositionStatus Status => (PositionSize == 0) ? TradePositionStatus.CLOSED : TradePositionStatus.OPEN;
+        public TradeStatus Status => (Position == 0) ? TradeStatus.CLOSE : TradeStatus.OPEN;
 
-        public decimal PositionSize => Executions.Select(e => e.Quantity).Sum();
+        public decimal Position => Executions.Select(e => e.Quantity).Sum();
+
+        public decimal LargestPosition
+        {
+            get
+            {
+                decimal max = 0;
+                decimal running = 0;
+                
+                foreach (var execution in Executions)
+                {
+                    running += execution.Quantity;
+                    max = Math.Max(max, running);
+                }
+
+                return max;
+            }
+        }
 
         public int ExecutionCount => Executions.Count();
 
@@ -44,8 +61,10 @@ namespace Firewatch.Domain.Entities
                 {
                     // the product is negated because a buy order has a positive quantity, and a sell order has a negative quantity
                     pnl += exec.UnitPrice.Amount * exec.Quantity * -1;
-                    pnl -= exec.Commissions.Amount;
-                    pnl -= exec.Fees.Amount;
+
+                    // add fees & commissions because they are represented as negative values
+                    pnl += exec.Commissions.Amount;
+                    pnl += exec.Fees.Amount;
                 }
 
                 return pnl;
@@ -86,5 +105,7 @@ namespace Firewatch.Domain.Entities
         }
 
         public string Symbol { get; }
+
+        public bool IsSwing => Executions.Select(e => e.Date.Date).Distinct().Count() > 1;
     }
 }

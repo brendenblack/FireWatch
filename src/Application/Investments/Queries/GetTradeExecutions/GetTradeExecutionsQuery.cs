@@ -40,13 +40,21 @@ namespace Firewatch.Application.Investments.Queries.GetTradeExecutions
         public async Task<TradeExecutionsVm> Handle(GetTradeExecutionsQuery request, CancellationToken cancellationToken)
         {
             var query = _context.TradeExecutions
-                .Where(t => t.Account.OwnerId == request.OwnerId)
-                .Where(t => t.Date >= request.From)
-                .Where(t => t.Date <= request.To);
+                .Where(t => t.Account.OwnerId == request.OwnerId);
+
+            if (request.From == request.To)
+            {
+                query = query.Where(t => t.Date.Date == request.From.Date);
+            }
+            else
+            {
+                query = query.Where(t => t.Date >= request.From)
+                    .Where(t => t.Date <= request.To);
+            }
 
             if (!string.IsNullOrWhiteSpace(request.AccountNumber))
             {
-                query.Where(t => t.Account.AccountNumber.Equals(request.AccountNumber));
+                query = query.Where(t => t.Account.AccountNumber.Equals(request.AccountNumber));
             }
 
             var executions = await query

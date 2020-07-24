@@ -4,6 +4,7 @@ import { ImportComponent } from './pages/import/import.component';
 import { JournalComponent } from './pages/journal/journal.component';
 import { JournalMonthComponent } from './pages/journal-month/journal-month.component';
 import { JournalYearComponent } from './pages/journal-year/journal-year.component';
+import { JournalDayComponent } from './pages/journal-day/journal-day.component';
 
 const routes: Routes = [
   {
@@ -30,6 +31,10 @@ const routes: Routes = [
   {
     path: 'calendar',
     component: JournalYearComponent
+  },
+  {
+    path: 'journal/:year/:month/:day',
+    component: JournalDayComponent
   },
 
 ];

@@ -3,21 +3,45 @@
 <div>Total volume: {{ journal.totalVolume() }}</div>
 <div>Total fees: {{ journal.totalFees() | currency: 'USD' }}</div>
 <div>Total commissions: {{ journal.totalCommissions() | currency: 'USD' }}</div>
-<table class="table table-sm">
+
+<table class="table">
     <thead>
         <tr>
-            <th scope="col">Symbol</th>
-            <th scope="col" class="text-right">Execs</th>
-            <th scope="col" class="text-right">Volume</th>
-            <th scope="col" class="text-right">P&L</th>
+            <th>Symbol</th>
+            <th>Time</th>
+            <th class="text-right">Quantity</th>
+            <th class="text-right">Price</th>
+            <th class="text-right">Proceeds</th>
+            <th class="text-right">Commissions</th>
+            <th></th>
         </tr>
     </thead>
-    <tbody>
-        <tr *ngFor="let symbolEntry of journal.symbols">
-            <td>{{ symbolEntry.symbol }}</td>
-            <td class="text-right">{{ symbolEntry.executionCount() }}</td>
-            <td class="text-right">{{ symbolEntry.volume() }}</td>
-            <td class="text-right">{{ symbolEntry.profitAndLoss(true) | currency: 'USD' }}</td>
-        </tr>
+    <tbody *ngFor="let symbolEntry of journal.symbols">
+            <tr>
+                <td><button class="btn btn-link" (click)="onSymbolClick(symbolEntry.symbol)">{{ symbolEntry.symbol }}</button></td>
+                <td></td>
+                <td class="text-right"><strong>{{ symbolEntry.volume() }}</strong></td>
+                <td></td>
+                <td class="text-right"><strong>{{ symbolEntry.profitAndLoss(true) | currency: 'USD' }}</strong></td>
+                <td class="text-right"><strong>{{ symbolEntry.commissions() | currency: 'USD' }}</strong></td>
+            </tr>
+            <tr *ngFor="let exec of symbolEntry.executions" display='hidden' [ngClass]="{ 'collapsedRow': !expandedSymbols.includes(symbolEntry.symbol) }">
+                <td></td>
+                <td>{{ exec.date }}</td>
+                <td class="text-right">{{ exec.quantity }}</td>
+                <td class="text-right">{{ exec.unitPrice.amount | currency: 'USD' }}</td>
+                <td class="text-right">{{ exec.unitPrice.amount * exec.quantity | currency: 'USD' }}</td>
+                <td class="text-right">{{ exec.commissions.amount | currency: 'USD' }}</td>
+            </tr>
     </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td class="text-right"><strong>{{ journal.totalProfitAndLoss(false) | currency: 'USD' }}</strong></td>
+            <td class="text-right"><strong>{{ journal.totalCommissions() | currency: 'USD' }}</strong></td>
+        </tr>
+    </tfoot>
 </table>

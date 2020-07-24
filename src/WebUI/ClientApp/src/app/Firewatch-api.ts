@@ -1171,9 +1171,11 @@ export interface ITradeExecutionsVm {
 
 export class TradeExecutionDto implements ITradeExecutionDto {
     date?: Date;
+    status?: string | undefined;
     action?: string | undefined;
     actionType?: string | undefined;
     symbol?: string | undefined;
+    vehicle?: string | undefined;
     quantity?: number;
     unitPrice?: CostModel | undefined;
     commissions?: CostModel | undefined;
@@ -1191,9 +1193,11 @@ export class TradeExecutionDto implements ITradeExecutionDto {
     init(_data?: any) {
         if (_data) {
             this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.status = _data["status"];
             this.action = _data["action"];
             this.actionType = _data["actionType"];
             this.symbol = _data["symbol"];
+            this.vehicle = _data["vehicle"];
             this.quantity = _data["quantity"];
             this.unitPrice = _data["unitPrice"] ? CostModel.fromJS(_data["unitPrice"]) : <any>undefined;
             this.commissions = _data["commissions"] ? CostModel.fromJS(_data["commissions"]) : <any>undefined;
@@ -1211,9 +1215,11 @@ export class TradeExecutionDto implements ITradeExecutionDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["status"] = this.status;
         data["action"] = this.action;
         data["actionType"] = this.actionType;
         data["symbol"] = this.symbol;
+        data["vehicle"] = this.vehicle;
         data["quantity"] = this.quantity;
         data["unitPrice"] = this.unitPrice ? this.unitPrice.toJSON() : <any>undefined;
         data["commissions"] = this.commissions ? this.commissions.toJSON() : <any>undefined;
@@ -1224,9 +1230,11 @@ export class TradeExecutionDto implements ITradeExecutionDto {
 
 export interface ITradeExecutionDto {
     date?: Date;
+    status?: string | undefined;
     action?: string | undefined;
     actionType?: string | undefined;
     symbol?: string | undefined;
+    vehicle?: string | undefined;
     quantity?: number;
     unitPrice?: CostModel | undefined;
     commissions?: CostModel | undefined;

@@ -30,9 +30,8 @@ export class TradesService {
                       const executionsOnDate = response.executions.filter(e => moment(e.date).isSame(date, 'day'));
 
                       for (let symbol of new Set(executionsOnDate.map(e => e.symbol))) {
-                        const journalSymbol = new JournalSymbol(symbol);
                         const executions = executionsOnDate.filter(e => e.symbol === symbol);
-                        journalSymbol.executions = executions;
+                        const journalSymbol = new JournalSymbol(symbol, executions);
                         entry.symbols.push(journalSymbol);
                       }
 

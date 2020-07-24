@@ -11,26 +11,22 @@
 }
 
 .calendar .cell {
-    height: 64px;
-    width: 64px;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    margin: 0;
-    padding: 6px;
 }
 
 .calendar-sm .cell {
-    height: 24px;
-    width: 24px;
-    padding: 4px;
+
+}
+
+.calendar .day {
+    background-color: #e0e0e0;
 }
 
 .calendar .win {
-    background-color: green;
+    background-color: #ccffcc;
 }
 
 .calendar .loss {
-    background-color: red;
+    background-color: #ffadad;
 }
 
 .calendar .draw {
@@ -38,5 +34,5 @@
 }
 
 .calendar .weekend {
-    background-color: gray;
+    background-color: #ccc;
 }

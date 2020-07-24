@@ -1,7 +1,45 @@
 
-<app-journal-entry *ngFor="let entry of vm.entries" [journal]="entry"></app-journal-entry>
+<app-journal-entry *ngFor="let entry of journalEntries" [journal]="entry"></app-journal-entry>
 
+<div *ngFor="let entry of journalEntries">
+    <div *ngFor="let symbol of entry.symbols">
+        <h3>{{ symbol.symbol }}</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th class="text-right">Quantity</th>
+                    <th class="text-right">Price</th>
+                    <th class="text-right">Proceeds</th>
+                    <th class="text-right">Commissions</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let exec of symbol.executions">
+                    <td>{{ exec.date }}</td>
+                    <td>{{ exec.actionType }}</td>
+                    <td class="text-right">{{ exec.quantity }}</td>
+                    <td class="text-right">{{ exec.unitPrice.amount | currency: 'USD' }}</td>
+                    <td class="text-right">{{ exec.unitPrice.amount * exec.quantity | currency: 'USD' }}</td>
+                    <td class="text-right">{{ exec.commissions.amount | currency: 'USD' }}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="text-right">{{ symbol.profitAndLoss(true) | currency: 'USD' }}</td>
+                </tr>
 
+            </tbody>
+        </table>
+    </div>
+
+</div>
 
 
 <!-- <div *ngFor="let item of vm | keyvalue">

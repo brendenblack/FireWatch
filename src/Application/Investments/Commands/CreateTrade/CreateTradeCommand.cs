@@ -2,6 +2,7 @@
 using Firewatch.Application.Common.Models;
 using Firewatch.Domain.Constants;
 using Firewatch.Domain.Entities;
+using Firewatch.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -72,7 +73,16 @@ namespace Firewatch.Application.Investments.Commands.AddTrades
                 _logger.LogWarning("Unsupported trade action: {}", request.Action);
             }
 
-            var trade = new TradeExecution(account, request.Action, request.Date, request.Symbol, request.Quantity, unitPrice, commissions, fees);
+            var trade = new TradeExecution(
+                account, 
+                request.Action,
+                TradeStatus.OPEN,
+                request.Date, 
+                request.Symbol, 
+                request.Quantity, 
+                unitPrice, 
+                commissions, 
+                fees);
 
             _context.TradeExecutions.Add(trade);
             await _context.SaveChangesAsync(cancellationToken);

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Firewatch.Application.Common.Interfaces;
 using Firewatch.Domain.Entities;
+using Firewatch.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -83,7 +84,19 @@ namespace Firewatch.Application.Investments.Commands.ParseAndImportTrades
                     }
 
                     // This is a hack to get around EF trying to save children entities that already exist (i.e. account)
-                    var execution = new TradeExecution(account, e.Action, e.Date, e.Symbol, e.Quantity, e.UnitPrice, e.Commissions, e.Fees);
+                    var execution = new TradeExecution(
+                        account, 
+                        e.Action, 
+                        e.Status, 
+                        e.Date, 
+                        e.Symbol, 
+                        e.Quantity, 
+                        e.UnitPrice, 
+                        e.Commissions, 
+                        e.Fees,
+                        e.IsPartialExecution,
+                        e.Routes,
+                        e.Vehicle);
 
                     _context.TradeExecutions.Add(execution);
                     addedTrades.Add(execution);

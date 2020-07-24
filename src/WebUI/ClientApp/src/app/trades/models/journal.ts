@@ -52,8 +52,9 @@ export class JournalEntry {
   }
 
 export class JournalSymbol {
-    constructor(symbol: string) {
+    constructor(symbol: string, executions: TradeExecutionDto[]) {
       this.symbol = symbol;
+      this.executions = executions.sort((a, b) => { return b.date.valueOf() - a.date.valueOf() }); 
     }
     symbol: string;
     executions: TradeExecutionDto[] = [];
@@ -87,10 +88,11 @@ export class JournalSymbol {
     profitAndLoss(includeFeesAndCommissions: boolean = false): number {
       let pnl = 0;
       for (let execution of this.executions) {
-        pnl += execution.unitPrice.amount * execution.quantity * - 1
+        pnl += ((execution.unitPrice.amount * execution.quantity) * - 1);
         if (includeFeesAndCommissions) {
-          pnl -= execution.fees.amount;
-          pnl -= execution.commissions.amount;
+          // fees and commissions are negative values, so we add them to the total
+          pnl += execution.fees.amount;
+          pnl += execution.commissions.amount;
         }
       }
       return pnl;

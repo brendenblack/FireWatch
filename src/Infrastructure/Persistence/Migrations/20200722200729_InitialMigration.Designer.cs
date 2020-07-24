@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Firewatch.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200717024333_ConfgureForeignKeyOnTradeExecution")]
-    partial class ConfgureForeignKeyOnTradeExecution
+    [Migration("20200722200729_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -249,8 +249,8 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Exchanges")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("IsPartialExecution")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -261,11 +261,20 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(30,6)");
 
+                    b.Property<string>("Routes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Tags")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Vehicle")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

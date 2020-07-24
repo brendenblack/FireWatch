@@ -744,6 +744,10 @@
             "type": "string",
             "format": "date-time"
           },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
           "action": {
             "type": "string",
             "nullable": true
@@ -753,6 +757,10 @@
             "nullable": true
           },
           "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicle": {
             "type": "string",
             "nullable": true
           },

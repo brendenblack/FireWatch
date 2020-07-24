@@ -38,9 +38,9 @@ namespace Firewatch.Domain.UnitTests.Entities
             var account = new BrokerageAccount(owner, "");
             var trade = new Trade("AMD");
             trade.AddExecutions(
-                new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 50m, new Price(), new Price(), new Price()),
-                new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 50m, new Price(), new Price(), new Price()),
-                new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 100m, new Price(), new Price(), new Price()));
+                new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 50m, new Price(), new Price(), new Price()),
+                new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 50m, new Price(), new Price(), new Price()),
+                new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 100m, new Price(), new Price(), new Price()));
 
             trade.Volume.ShouldBe(200m);
         }
@@ -54,7 +54,7 @@ namespace Firewatch.Domain.UnitTests.Entities
 
             public decimal ExpectedPositionSize { get; set; }
 
-            public TradePositionStatus ExpectedStatus { get; set; }
+            public TradeStatus ExpectedStatus { get; set; }
 
             public decimal ExpectedNetProfitAndLoss { get; set; }
 
@@ -73,13 +73,13 @@ namespace Firewatch.Domain.UnitTests.Entities
                     {
                         Executions = new []
                         {
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(3m, "USD"), new Price())
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(3m, "USD"), new Price())
                         },
                         ExpectedVolume = 200m,
                         ExpectedPositionSize = 0m,
-                        ExpectedStatus = TradePositionStatus.CLOSED,
+                        ExpectedStatus = TradeStatus.CLOSE,
                         ExpectedGrossProfitAndLoss = 400m,
                         ExpectedNetProfitAndLoss = 391m,
                         ExpectedExecutionCount = 3,
@@ -90,14 +90,14 @@ namespace Firewatch.Domain.UnitTests.Entities
                     {
                         Executions = new []
                         {
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AAPL", 10m, new Price(-3000m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(3m, "USD"), new Price())
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AAPL", 10m, new Price(-3000m, "USD"), new Price(3m, "USD"), new Price()),
+                            new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(3m, "USD"), new Price())
                         },
                         ExpectedVolume = 200m,
                         ExpectedPositionSize = 0m,
-                        ExpectedStatus = TradePositionStatus.CLOSED,
+                        ExpectedStatus = TradeStatus.CLOSE,
                         ExpectedGrossProfitAndLoss = 400m,
                         ExpectedNetProfitAndLoss = 391m,
                         ExpectedExecutionCount = 3,
@@ -114,7 +114,7 @@ namespace Firewatch.Domain.UnitTests.Entities
             trade.AddExecutions(testCase.Executions.ToArray());
 
             trade.ExecutionCount.ShouldBe(testCase.ExpectedExecutionCount);
-            trade.PositionSize.ShouldBe(testCase.ExpectedPositionSize);
+            trade.Position.ShouldBe(testCase.ExpectedPositionSize);
             trade.Volume.ShouldBe(testCase.ExpectedVolume);
             trade.Status.ShouldBe(testCase.ExpectedStatus);
             trade.NetProfitAndLoss.ShouldBe(testCase.ExpectedNetProfitAndLoss);

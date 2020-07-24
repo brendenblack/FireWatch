@@ -11,11 +11,15 @@ namespace Firewatch.Application.Investments.Queries.GetTradeExecutions
     {
         public DateTime Date { get; set; }
 
+        public string Status { get; set; }
+
         public string Action { get; set; }
 
         public string ActionType { get; set; }
 
         public string Symbol { get; set; }
+
+        public string Vehicle { get; set; }
 
         public decimal Quantity { get; set; }
 

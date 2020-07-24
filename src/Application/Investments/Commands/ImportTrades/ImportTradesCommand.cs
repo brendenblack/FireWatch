@@ -52,8 +52,8 @@ namespace Firewatch.Application.Investments.Commands.ImportTrades
                 var commissions = new Price(model.Commissions.Amount, model.Commissions.Currency);
 
                 // TODO, whatever
-                var trade = new TradeExecution(new BrokerageAccount(owner, ""), model.Action, model.Date, model.Symbol, model.Quantity, unitPrice, commissions, fees);
-                trades.Add(trade);
+                //var trade = new TradeExecution(new BrokerageAccount(owner, ""), model.Action, model.Date, model.Symbol, model.Quantity, unitPrice, commissions, fees);
+                //trades.Add(trade);
             }
 
             return response;
