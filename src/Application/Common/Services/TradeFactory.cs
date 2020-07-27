@@ -12,51 +12,59 @@ namespace Firewatch.Application.Common.Services
         /// <summary>
         /// Groups <see cref="TradeExecution"/>s together from open to close of a positon on a single symbol. 
         /// <para>
-        /// If the executions that opened or closed the position are not provided, then 
-        /// that sequence of executions will be ignored.
+        /// If the execution that opened a position is not provided, then that sequence of executions will be
+        /// ignored.
         /// </para>
         /// </summary>
         /// <param name="executions"></param>
         /// <returns></returns>
-        public IEnumerable<Trade> ConstructIntradayTradesFromExecutions(IEnumerable<TradeExecution> executions)
+        public IEnumerable<Trade> ConstructTradesFromExecutions(IEnumerable<TradeExecution> executions)
         {
-            var groupedExecutions = executions.GroupBy(e => new { e.Date.Date, e.Symbol })
-                .Select(g => new { g.Key.Date, g.Key.Symbol, Executions = g.ToList() });
-
             var trades = new List<Trade>();
+
+            // group by account, date, symbol
+            var groupedExecutions = executions.GroupBy(e => new { e.AccountId, e.Date.Date, e.Symbol })
+               .Select(g => new { g.Key.AccountId, g.Key.Date, g.Key.Symbol, Executions = g.OrderBy(e => e.Date).ToList() });
+
             foreach (var group in groupedExecutions)
             {
-                decimal positionSize = 0;
-                Trade trade = new Trade(group.Symbol);
-                foreach (var execution in group.Executions.OrderBy(e => e.Date))
-                {
-                    // iterate through all executions in chronological order
+                // Initialize the first trade for this account & date & symbol
+                var trade = new Trade(group.Symbol);
 
-                    if (positionSize == 0 && execution.Status == TradeStatus.CLOSE)
+                // Initialize a tracker that will monitor the current position size, and
+                // when it returns to 0 that means the trade is closed.
+                //decimal positionSizeTracker = 0;
+
+                for (int i = 0; i < group.Executions.Count; i++)
+                {
+                    var execution = group.Executions[i];
+
+                    if (trade.Position == 0 && execution.Intent == TradeIntents.CLOSING)
                     {
-                        // first trade appears to be closing out a swing position, ignore it
+                        // first trade appears to be closing out an untracked position, so we'll 
+                        // just go ahead and ignore it
                         continue;
                     }
 
                     trade.AddExecutions(execution);
-                    positionSize += execution.Quantity;
 
-                    if (execution.Status == TradeStatus.CLOSE && positionSize == 0)
+                    if (i == group.Executions.Count - 1)
                     {
-                        // the latest trade was a SELLTOCLOSE or BUYTOCLOSE (cover) order that caused
-                        // the position size to be 0, closing this group of executions as one trade.
-
-                        // add the trade to the trades collection and start a new one
+                        // This is the last execution, so we should add this trade to the collection whether
+                        // it is open or closed.
+                        trades.Add(trade);
+                    }
+                    else if (execution.Intent == TradeIntents.CLOSING && trade.Position == 0 && i < group.Executions.Count)
+                    {
+                        // The latest trade was a SELLTOCLOSE or BUYTOCLOSE (cover) order that caused
+                        // the position size to be 0, which closes this group of executions as one trade.
+                        // Add the trade to the collection an initialize a new one
                         trades.Add(trade);
                         trade = new Trade(group.Symbol);
                     }
-
-                    // note: if the final trade for a given date & symbol does not close out a position,
-                    // it will not be added to the trades collection; this is by design, as we only want to fetch 
-                    // intraday trades.
                 }
             }
-
+            
             return trades;
         }
     }

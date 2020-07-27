@@ -657,71 +657,7 @@
       },
       "TradeDto": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "open": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "close": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "action": {
-            "type": "string",
-            "nullable": true
-          },
-          "actionType": {
-            "type": "string",
-            "nullable": true
-          },
-          "symbol": {
-            "type": "string",
-            "nullable": true
-          },
-          "quantity": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "unitPrice": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CostModel"
-              }
-            ]
-          },
-          "commissions": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CostModel"
-              }
-            ]
-          },
-          "fees": {
-            "nullable": true,
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/CostModel"
-              }
-            ]
-          }
-        }
-      },
-      "CostModel": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "amount": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "currency": {
-            "type": "string",
-            "nullable": true
-          }
-        }
+        "additionalProperties": false
       },
       "TradeExecutionsVm": {
         "type": "object",
@@ -744,7 +680,7 @@
             "type": "string",
             "format": "date-time"
           },
-          "status": {
+          "intent": {
             "type": "string",
             "nullable": true
           },
@@ -791,6 +727,20 @@
                 "$ref": "#/components/schemas/CostModel"
               }
             ]
+          }
+        }
+      },
+      "CostModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "currency": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

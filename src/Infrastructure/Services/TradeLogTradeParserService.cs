@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using Firewatch.Application.Common.Interfaces;
+using Firewatch.Domain.Constants;
 using Firewatch.Domain.Entities;
 using Firewatch.Domain.Enums;
 using Firewatch.Domain.ValueObjects;
@@ -58,19 +59,23 @@ namespace Firewatch.Infrastructure.Services
 
                 var routes = record.Routes.Split(',');
                 var codes = record.ActionIdentifiers.Split(';');
-                TradeStatus tradeStatus;
-                if (codes.Contains("O"))
+
+                TradeActions tradeAction;
+                switch (record.Action.ToUpper())
                 {
-                    tradeStatus = TradeStatus.OPEN;
-                } 
-                else if (codes.Contains("C"))
-                {
-                    tradeStatus = TradeStatus.CLOSE;
-                }
-                else
-                {
-                    _logger.LogWarning("Unable to determine if trade was an open or close", codes);
-                    continue;
+                    case "SELLTOOPEN":
+                        tradeAction = TradeActions.SELL_TO_OPEN;
+                        break;
+                    case "SELLTOCLOSE":
+                        tradeAction = TradeActions.SELL_TO_CLOSE;
+                        break;
+                    case "BUYTOCLOSE":
+                        tradeAction = TradeActions.BUY_TO_CLOSE;
+                        break;
+                    case "BUYTOOPEN":
+                    default:
+                        tradeAction = TradeActions.BUY_TO_OPEN;
+                        break;
                 }
 
                 TradeVehicle vehicle;
@@ -102,18 +107,18 @@ namespace Firewatch.Infrastructure.Services
                 bool isPartial = codes.Contains("P");
 
                 var trade = new TradeExecution(
-                    account, 
-                    record.Action, 
-                    tradeStatus, 
-                    date, 
-                    symbol, 
-                    record.Quantity, 
-                    unitPrice, 
+                    account,
+                    date,
+                    symbol,
+                    record.Quantity,
+                    unitPrice,
                     commissions,
-                    fees, 
-                    isPartial: isPartial, 
-                    routes: routes,
-                    vehicle: vehicle);
+                    fees,
+                    tradeAction,
+                    isPartial,
+                    routes,
+                    vehicle,
+                    TradeConstants.CREATION_METHOD_IMPORT);
 
                 trades.Add(trade);
             }

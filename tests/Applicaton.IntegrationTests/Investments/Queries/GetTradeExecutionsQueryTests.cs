@@ -24,8 +24,8 @@ namespace Firewatch.Application.IntegrationTests.Investments.Queries
             var db = CreateScopedContext();
             var account = new BrokerageAccount(new Person { Id = userId }, "U3111111");
             //db.People.Add(owner);
-            db.TradeExecutions.Add(new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, new DateTime(2020, 04, 22, 10, 16, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
-            db.TradeExecutions.Add(new TradeExecution(account, TradeConstants.SELL_TO_CLOSE, TradeStatus.CLOSE, new DateTime(2020, 04, 22, 10, 17, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
+            db.TradeExecutions.Add(new TradeExecution(account, new DateTime(2020, 04, 22, 10, 16, 12), "AAL", 331.0m, new Price()));
+            db.TradeExecutions.Add(new TradeExecution(account, new DateTime(2020, 04, 22, 10, 17, 12), "AAL", 331.0m, new Price(), tradeAction: TradeActions.SELL_TO_CLOSE));
             db.SaveChanges();
             var query = new GetTradeExecutionsQuery
             {
@@ -44,11 +44,10 @@ namespace Firewatch.Application.IntegrationTests.Investments.Queries
             var userId = await RunAsDefaultUserAsync();
             var db = CreateScopedContext();
             var account = new BrokerageAccount(new Person { Id = userId }, "U3111111");
-            //db.People.Add(owner);
-            db.TradeExecutions.Add(new TradeExecution(account, TradeConstants.BUY_TO_OPEN, TradeStatus.OPEN, new DateTime(2020, 04, 22, 10, 16, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
-            db.TradeExecutions.Add(new TradeExecution(account, TradeConstants.SELL_TO_CLOSE, TradeStatus.OPEN, new DateTime(2020, 04, 22, 10, 17, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
-            db.TradeExecutions.Add(new TradeExecution(account, TradeConstants.SELL_TO_CLOSE, TradeStatus.OPEN, new DateTime(2020, 04, 23, 10, 17, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
-            db.TradeExecutions.Add(new TradeExecution(account, TradeConstants.SELL_TO_CLOSE, TradeStatus.OPEN, new DateTime(2020, 04, 24, 10, 17, 12), "AAL", 331.0m, new Price(), new Price(), new Price()));
+            db.TradeExecutions.Add(new TradeExecution(account, new DateTime(2020, 04, 22, 10, 16, 12), "AAL", 331.0m, new Price()));
+            db.TradeExecutions.Add(new TradeExecution(account, new DateTime(2020, 04, 22, 10, 17, 12), "AAL", 331.0m, new Price()));
+            db.TradeExecutions.Add(new TradeExecution(account, new DateTime(2020, 04, 23, 10, 17, 12), "AAL", 331.0m, new Price()));
+            db.TradeExecutions.Add(new TradeExecution(account, new DateTime(2020, 04, 24, 10, 17, 12), "AAL", 331.0m, new Price()));
             db.SaveChanges();
             var query = new GetTradeExecutionsQuery
             {

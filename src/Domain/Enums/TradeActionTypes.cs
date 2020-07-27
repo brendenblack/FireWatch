@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Firewatch.Domain.Enums
 {
-    public enum TradeAction
+    public enum TradeActionTypes
     {
         BUY,
         SELL,

@@ -1020,15 +1020,6 @@ export interface IGetTradesVm {
 }
 
 export class TradeDto implements ITradeDto {
-    open?: moment.Moment;
-    close?: moment.Moment;
-    action?: string | undefined;
-    actionType?: string | undefined;
-    symbol?: string | undefined;
-    quantity?: number;
-    unitPrice?: CostModel | undefined;
-    commissions?: CostModel | undefined;
-    fees?: CostModel | undefined;
 
     constructor(data?: ITradeDto) {
         if (data) {
@@ -1040,17 +1031,6 @@ export class TradeDto implements ITradeDto {
     }
 
     init(_data?: any) {
-        if (_data) {
-            this.open = _data["open"] ? moment(_data["open"].toString()) : <any>undefined;
-            this.close = _data["close"] ? moment(_data["close"].toString()) : <any>undefined;
-            this.action = _data["action"];
-            this.actionType = _data["actionType"];
-            this.symbol = _data["symbol"];
-            this.quantity = _data["quantity"];
-            this.unitPrice = _data["unitPrice"] ? CostModel.fromJS(_data["unitPrice"]) : <any>undefined;
-            this.commissions = _data["commissions"] ? CostModel.fromJS(_data["commissions"]) : <any>undefined;
-            this.fees = _data["fees"] ? CostModel.fromJS(_data["fees"]) : <any>undefined;
-        }
     }
 
     static fromJS(data: any): TradeDto {
@@ -1062,69 +1042,11 @@ export class TradeDto implements ITradeDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["open"] = this.open ? this.open.toISOString() : <any>undefined;
-        data["close"] = this.close ? this.close.toISOString() : <any>undefined;
-        data["action"] = this.action;
-        data["actionType"] = this.actionType;
-        data["symbol"] = this.symbol;
-        data["quantity"] = this.quantity;
-        data["unitPrice"] = this.unitPrice ? this.unitPrice.toJSON() : <any>undefined;
-        data["commissions"] = this.commissions ? this.commissions.toJSON() : <any>undefined;
-        data["fees"] = this.fees ? this.fees.toJSON() : <any>undefined;
         return data; 
     }
 }
 
 export interface ITradeDto {
-    open?: moment.Moment;
-    close?: moment.Moment;
-    action?: string | undefined;
-    actionType?: string | undefined;
-    symbol?: string | undefined;
-    quantity?: number;
-    unitPrice?: CostModel | undefined;
-    commissions?: CostModel | undefined;
-    fees?: CostModel | undefined;
-}
-
-export class CostModel implements ICostModel {
-    amount?: number;
-    currency?: string | undefined;
-
-    constructor(data?: ICostModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.amount = _data["amount"];
-            this.currency = _data["currency"];
-        }
-    }
-
-    static fromJS(data: any): CostModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new CostModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["amount"] = this.amount;
-        data["currency"] = this.currency;
-        return data; 
-    }
-}
-
-export interface ICostModel {
-    amount?: number;
-    currency?: string | undefined;
 }
 
 export class TradeExecutionsVm implements ITradeExecutionsVm {
@@ -1173,7 +1095,7 @@ export interface ITradeExecutionsVm {
 
 export class TradeExecutionDto implements ITradeExecutionDto {
     date?: moment.Moment;
-    status?: string | undefined;
+    intent?: string | undefined;
     action?: string | undefined;
     actionType?: string | undefined;
     symbol?: string | undefined;
@@ -1195,7 +1117,7 @@ export class TradeExecutionDto implements ITradeExecutionDto {
     init(_data?: any) {
         if (_data) {
             this.date = _data["date"] ? moment(_data["date"].toString()) : <any>undefined;
-            this.status = _data["status"];
+            this.intent = _data["intent"];
             this.action = _data["action"];
             this.actionType = _data["actionType"];
             this.symbol = _data["symbol"];
@@ -1217,7 +1139,7 @@ export class TradeExecutionDto implements ITradeExecutionDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["status"] = this.status;
+        data["intent"] = this.intent;
         data["action"] = this.action;
         data["actionType"] = this.actionType;
         data["symbol"] = this.symbol;
@@ -1232,7 +1154,7 @@ export class TradeExecutionDto implements ITradeExecutionDto {
 
 export interface ITradeExecutionDto {
     date?: moment.Moment;
-    status?: string | undefined;
+    intent?: string | undefined;
     action?: string | undefined;
     actionType?: string | undefined;
     symbol?: string | undefined;
@@ -1241,6 +1163,46 @@ export interface ITradeExecutionDto {
     unitPrice?: CostModel | undefined;
     commissions?: CostModel | undefined;
     fees?: CostModel | undefined;
+}
+
+export class CostModel implements ICostModel {
+    amount?: number;
+    currency?: string | undefined;
+
+    constructor(data?: ICostModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.amount = _data["amount"];
+            this.currency = _data["currency"];
+        }
+    }
+
+    static fromJS(data: any): CostModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new CostModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["amount"] = this.amount;
+        data["currency"] = this.currency;
+        return data; 
+    }
+}
+
+export interface ICostModel {
+    amount?: number;
+    currency?: string | undefined;
 }
 
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {

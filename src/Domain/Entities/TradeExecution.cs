@@ -14,70 +14,81 @@ namespace Firewatch.Domain.Entities
         public TradeExecution() { }
 
         public TradeExecution(
-            BrokerageAccount account,
-            
-            string tradeAction,
-            TradeStatus tradeStatus,
+            [NotNull] BrokerageAccount account,
             [NotNull] DateTime date,
             [NotNull] string symbol,
-            decimal quantity,
+            [NotNull] decimal quantity,
             [NotNull] Price unitPrice,
-            Price commissions,
-            Price fees,
+            Price commissions = null,
+            Price fees = null,
+            TradeActions tradeAction = TradeActions.BUY_TO_OPEN,
             bool isPartial = false,
             IEnumerable<string> routes = null,
-            TradeVehicle vehicle = TradeVehicle.STOCK)
+            TradeVehicle vehicle = TradeVehicle.STOCK,
+            string creationMethod = TradeConstants.CREATION_METHOD_MANUAL)
         {
             AccountId = account.Id;
             Account = account;
-            Vehicle = vehicle;
-            Status = tradeStatus;
-            Action = tradeAction?.ToLower() ?? "unknown";
-            Date = date;
+
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
+            Date = date;
+            Vehicle = vehicle;
             Quantity = quantity;
             UnitPrice = unitPrice;
+            IsPartialExecution = isPartial;
+
+            Action = tradeAction;
+            Intent = (Action == TradeActions.BUY_TO_OPEN || Action == TradeActions.SELL_TO_OPEN) ? TradeIntents.OPENING : TradeIntents.CLOSING;
+            ActionType = (Action == TradeActions.BUY_TO_OPEN || Action == TradeActions.BUY_TO_CLOSE) ? TradeActionTypes.BUY: TradeActionTypes.SELL;
+                     
             Routes = (routes == null) ? new HashSet<string>() : routes.ToHashSet();
             Commissions = commissions ?? new Price();
             Fees = fees ?? new Price();
-            IsPartialExecution = isPartial;
+
+            CreationMethod = creationMethod;
         }
 
-        public int Id { get; set; }
+        public int Id { get; private set; }
 
-        public int AccountId { get; }
+        public int AccountId { get; private set; }
 
-        public BrokerageAccount Account { get; }
+        public BrokerageAccount Account { get; private set; }
 
         public TradeVehicle Vehicle { get; private set; }
 
         public DateTime Date { get; private set; }
 
-        public string Action { get; private set; }
+        public TradeActions Action { get; private set; }
 
-        public TradeAction ActionType
-        {
-            get
-            {
-                if (Action.Contains("sell"))
-                {
-                    return TradeAction.SELL;
-                }
-                else
-                {
-                    return TradeAction.BUY;
-                }
-            }
-        }
+        /// <summary>
+        /// Indicates whether the intent of this trade is to grow (<see cref="TradeIntents.OPENING"/>) or 
+        /// shrink (<see cref="TradeIntents.CLOSING"/>) a position.
+        /// </summary>
+        public TradeIntents Intent { get; private set; }
 
-        public TradeStatus Status { get; set; }
+        /// <summary>
+        /// Whether this trade was buying or selling shares.
+        /// </summary>
+        public TradeActionTypes ActionType { get; private set; }
 
+        /// <summary>
+        /// The identifying symbol of the asset being traded.
+        /// </summary>
         public string Symbol { get; private set; }
 
+        /// <summary>
+        /// How many units of the underlying asset are being traded.
+        /// </summary>
         public decimal Quantity { get; private set; }
 
+        /// <summary>
+        /// What routes were used to fill this order.
+        /// </summary>
         public IReadOnlyCollection<string> Routes { get; private set; } = new HashSet<string>();
 
+        /// <summary>
+        /// The average price that this order executed at.
+        /// </summary>
         public Price UnitPrice { get; private set; }
 
         /// <summary>
@@ -90,24 +101,32 @@ namespace Firewatch.Domain.Entities
         {
             get
             {
-                // TODO: handle sell to open and buy to close
-                if (Action == TradeConstants.BUY_TO_OPEN)
+                decimal value;
+
+                if (Vehicle == TradeVehicle.OPTION)
                 {
-                    return Quantity * UnitPrice.Amount + (Fees.Amount * -1) + (Commissions.Amount * -1);
-                }
-                else if (Action == TradeConstants.SELL_TO_CLOSE)
-                {
-                    return Quantity * UnitPrice.Amount - Fees.Amount - Commissions.Amount;
+                    value = Quantity * -1 * UnitPrice.Amount * 100;
                 }
                 else
                 {
-                    return -1;
+                    value = Quantity * -1 * UnitPrice.Amount;
                 }
+
+                value -= Fees.Amount;
+                value -= Commissions.Amount;
+
+                return value;
             }
         }
 
+        /// <summary>
+        /// How much the broker charged in commissions to execute this order.
+        /// </summary>
         public Price Commissions { get; private set; } = new Price();
 
+        /// <summary>
+        /// How much the broker and routes charged in fees to execute this order.
+        /// </summary>
         public Price Fees { get; private set; } = new Price();
 
         public IReadOnlyCollection<string> Tags { get; } = new HashSet<string>();
@@ -128,5 +147,10 @@ namespace Firewatch.Domain.Entities
         /// Whether this execution was a partial fill by the platform.
         /// </summary>
         public bool IsPartialExecution { get; private set; } = false;
+
+        public override string ToString()
+        {
+            return $"{ActionType} {Symbol} x {Quantity} @ {UnitPrice.Amount:C2}";
+        }
     }
 }

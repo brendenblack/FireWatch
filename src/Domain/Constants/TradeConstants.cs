@@ -6,10 +6,25 @@ namespace Firewatch.Domain.Constants
 {
     public class TradeConstants
     {
-        public const string SELL_TO_CLOSE = "stc";
-        public const string SELL_TO_OPEN = "sto";
-        public const string BUY_TO_OPEN = "bto";
-        public const string BUY_TO_CLOSE = "btc";
+        /// <summary>
+        /// Implies the sale of an asset on the long side.
+        /// </summary>
+        public const string SELL_TO_CLOSE = "selltoclose";
+
+        /// <summary>
+        /// Implies the sale of an asset on the short side.
+        /// </summary>
+        public const string SELL_TO_OPEN = "selltoopen";
+
+        /// <summary>
+        /// Implies the purchase of an asset on the long side.
+        /// </summary>
+        public const string BUY_TO_OPEN = "buytoopen";
+
+        /// <summary>
+        /// Implies the purchase of an asset on the short side.
+        /// </summary>
+        public const string BUY_TO_CLOSE = "buytoclose";
 
 
         public static readonly string[] SUPPORTED_TRADE_ACTIONS = { 

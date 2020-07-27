@@ -18,11 +18,13 @@ namespace Firewatch.Domain.Entities
             this.Symbol = symbol;
         }
 
+        public TradeSides Side { get; private set; }
+
         public DateTime Open => (Executions.Count() > 0) ? Executions.Select(e => e.Date).Min() : DateTime.MinValue;
 
         public DateTime Close => (Executions.Count() > 0) ? Executions.Select(e => e.Date).Max() : DateTime.MinValue;
 
-        public TradeStatus Status => (Position == 0) ? TradeStatus.CLOSE : TradeStatus.OPEN;
+        public TradeState State => (Position == 0) ? TradeState.CLOSED : TradeState.OPEN;
 
         public decimal Position => Executions.Select(e => e.Quantity).Sum();
 
@@ -62,9 +64,9 @@ namespace Firewatch.Domain.Entities
                     // the product is negated because a buy order has a positive quantity, and a sell order has a negative quantity
                     pnl += exec.UnitPrice.Amount * exec.Quantity * -1;
 
-                    // add fees & commissions because they are represented as negative values
-                    pnl += exec.Commissions.Amount;
-                    pnl += exec.Fees.Amount;
+                    // subtract fees & commissions because they are represented as positive values
+                    pnl -= exec.Commissions.Amount;
+                    pnl -= exec.Fees.Amount;
                 }
 
                 return pnl;
@@ -106,6 +108,10 @@ namespace Firewatch.Domain.Entities
 
         public string Symbol { get; }
 
-        public bool IsSwing => Executions.Select(e => e.Date.Date).Distinct().Count() > 1;
+        public bool IsClosed => State == TradeState.CLOSED;
+
+        public bool IsSwing => IsClosed && Executions.Select(e => e.Date.Date).Distinct().Count() > 1;
+
+        public bool IsIntraDay => IsClosed && Executions.Select(e => e.Date.Date).Distinct().Count() == 1;
     }
 }

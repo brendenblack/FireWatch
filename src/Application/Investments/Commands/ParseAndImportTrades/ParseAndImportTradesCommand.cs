@@ -85,20 +85,21 @@ namespace Firewatch.Application.Investments.Commands.ParseAndImportTrades
                         continue;
                     }
 
-                    // This is a hack to get around EF trying to save children entities that already exist (i.e. account)
+                    // This is a hack to get around EF trying to save children entities that already exist; we
+                    // replace the account provided by the parser with one fetched from this context scope.
                     var execution = new TradeExecution(
                         account, 
-                        e.Action, 
-                        e.Status, 
                         e.Date, 
                         e.Symbol, 
                         e.Quantity, 
                         e.UnitPrice, 
                         e.Commissions, 
                         e.Fees,
+                        e.Action,
                         e.IsPartialExecution,
                         e.Routes,
-                        e.Vehicle);
+                        e.Vehicle,
+                        e.CreationMethod);
 
                     _context.TradeExecutions.Add(execution);
                     addedTrades.Add(execution);

@@ -48,6 +48,8 @@ namespace Firewatch.Application.Investments.Commands.AddTrades
 
         public async Task<int> Handle(CreateTradeCommand request, CancellationToken cancellationToken)
         {
+            throw new NotImplementedException("This command is not yet supported.");
+
             BrokerageAccount account = (BrokerageAccount) await _context.Accounts
                 .Where(a => a.OwnerId == request.OwnerId)
                 .Where(a => a.AccountNumber == request.AccountNumber)
@@ -75,8 +77,6 @@ namespace Firewatch.Application.Investments.Commands.AddTrades
 
             var trade = new TradeExecution(
                 account, 
-                request.Action,
-                TradeStatus.OPEN,
                 request.Date, 
                 request.Symbol, 
                 request.Quantity, 

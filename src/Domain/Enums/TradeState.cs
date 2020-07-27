@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Firewatch.Domain.Enums
 {
-    public enum TradeStatus
+    public enum TradeState
     {
         OPEN,
-        CLOSE
+        CLOSED
     };
 }

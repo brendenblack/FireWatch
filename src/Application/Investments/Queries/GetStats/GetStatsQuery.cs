@@ -47,7 +47,7 @@ namespace Firewatch.Application.Investments.Queries.GetStats
             var executions = await query.ToListAsync();
 
 
-            var intradayTrades = _tradeFactory.ConstructIntradayTradesFromExecutions(executions);
+            var intradayTrades = _tradeFactory.ConstructTradesFromExecutions(executions);
 
             // daily view
             foreach (var dow in Enum.GetValues(typeof(DayOfWeek)).OfType<DayOfWeek>())

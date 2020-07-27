@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Firewatch.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200722200729_InitialMigration")]
+    [Migration("20200727200248_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -234,8 +234,11 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Action")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Action")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ActionType")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -248,6 +251,9 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Intent")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsPartialExecution")
                         .HasColumnType("bit");
@@ -263,9 +269,6 @@ namespace Firewatch.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Routes")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("Symbol")
                         .HasColumnType("nvarchar(max)");
