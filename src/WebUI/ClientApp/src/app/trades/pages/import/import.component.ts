@@ -35,6 +35,10 @@ export class ImportComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  toast: ResultsToast | null;
+
+
+
   onFileChange(event: Event) {
     if ((event.target as HTMLInputElement).files && (event.target as HTMLInputElement).files.length) {
       const file = (event.target as HTMLInputElement).files[0];
@@ -64,6 +68,10 @@ export class ImportComponent implements OnInit {
     });
   }
 
+  hideToast() {
+    this.toast = null;
+  }
+
   onSubmit() {
     console.log('Form value...', this.importForm.value);
 
@@ -77,9 +85,15 @@ export class ImportComponent implements OnInit {
     this.client.importTrades(model)
       .subscribe(resp => {
       console.log(`Added ${resp.createdIds.length} trades (${resp.duplicates} ignored as duplicates).`);
+      this.toast = { created: resp.createdIds.length, ignored: resp.duplicates };
     });
     
     this.importForm.get('fileContents').value
   }
 
+}
+
+interface ResultsToast {
+  created: number;
+  ignored: number;
 }

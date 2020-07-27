@@ -55,5 +55,24 @@ namespace Firewatch.Application.IntegrationTests.Investments.Commands
             result.Duplicates.Should().Be(1);
             result.CreatedIds.Count.Should().Be(747);
         }
+
+        [Test]
+        public async Task ImportOptionsTrades()
+        {
+            var userId = await RunAsDefaultUserAsync();
+            await AddAsync(new Person { Id = userId });
+            var contents = ReadLocalTestFile("U3111111_with_options.tlg");
+            var command = new ParseAndImportTradesCommand
+            {
+                OwnerId = userId,
+                RequestorId = userId,
+                Contents = contents,
+                Format = "TradeLog"
+            };
+
+            var result = await SendAsync(command);
+
+            result.CreatedIds.Count.Should().BeGreaterThan(14);
+        }
     }
 }

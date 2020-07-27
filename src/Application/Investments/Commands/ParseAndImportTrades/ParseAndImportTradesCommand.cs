@@ -45,9 +45,11 @@ namespace Firewatch.Application.Investments.Commands.ParseAndImportTrades
             var owner = _context.People.First(p => p.Id == request.OwnerId);
             
             var parser = _parsers.First(p => p.Format.Equals(request.Format, StringComparison.InvariantCultureIgnoreCase));
+            
             var parsedTrades = parser.ParseForOwner(owner, request.Contents)
                 .GroupBy(t => t.Account.AccountNumber)
                 .ToDictionary(k => k.Key, v => v.ToList());
+            
             var addedTrades = new List<TradeExecution>();
             var response = new ParseAndImportTradesResponse();
 

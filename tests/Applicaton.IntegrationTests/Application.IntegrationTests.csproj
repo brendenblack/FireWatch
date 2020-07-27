@@ -42,6 +42,9 @@
     <None Update="U3111111_20200316_20200501.tlg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="U3111111_with_options.tlg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

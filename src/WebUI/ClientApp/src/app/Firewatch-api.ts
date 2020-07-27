@@ -12,6 +12,8 @@ import { Observable, throwError as _observableThrow, of as _observableOf } from 
 import { Injectable, Inject, Optional, InjectionToken } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angular/common/http';
 
+import * as moment from 'moment';
+
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IAccountsClient {
@@ -1018,8 +1020,8 @@ export interface IGetTradesVm {
 }
 
 export class TradeDto implements ITradeDto {
-    open?: Date;
-    close?: Date;
+    open?: moment.Moment;
+    close?: moment.Moment;
     action?: string | undefined;
     actionType?: string | undefined;
     symbol?: string | undefined;
@@ -1039,8 +1041,8 @@ export class TradeDto implements ITradeDto {
 
     init(_data?: any) {
         if (_data) {
-            this.open = _data["open"] ? new Date(_data["open"].toString()) : <any>undefined;
-            this.close = _data["close"] ? new Date(_data["close"].toString()) : <any>undefined;
+            this.open = _data["open"] ? moment(_data["open"].toString()) : <any>undefined;
+            this.close = _data["close"] ? moment(_data["close"].toString()) : <any>undefined;
             this.action = _data["action"];
             this.actionType = _data["actionType"];
             this.symbol = _data["symbol"];
@@ -1074,8 +1076,8 @@ export class TradeDto implements ITradeDto {
 }
 
 export interface ITradeDto {
-    open?: Date;
-    close?: Date;
+    open?: moment.Moment;
+    close?: moment.Moment;
     action?: string | undefined;
     actionType?: string | undefined;
     symbol?: string | undefined;
@@ -1170,7 +1172,7 @@ export interface ITradeExecutionsVm {
 }
 
 export class TradeExecutionDto implements ITradeExecutionDto {
-    date?: Date;
+    date?: moment.Moment;
     status?: string | undefined;
     action?: string | undefined;
     actionType?: string | undefined;
@@ -1192,7 +1194,7 @@ export class TradeExecutionDto implements ITradeExecutionDto {
 
     init(_data?: any) {
         if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.date = _data["date"] ? moment(_data["date"].toString()) : <any>undefined;
             this.status = _data["status"];
             this.action = _data["action"];
             this.actionType = _data["actionType"];
@@ -1229,7 +1231,7 @@ export class TradeExecutionDto implements ITradeExecutionDto {
 }
 
 export interface ITradeExecutionDto {
-    date?: Date;
+    date?: moment.Moment;
     status?: string | undefined;
     action?: string | undefined;
     actionType?: string | undefined;
@@ -1661,7 +1663,7 @@ export interface IUpdateTodoListCommand {
 }
 
 export class WeatherForecast implements IWeatherForecast {
-    date?: Date;
+    date?: moment.Moment;
     temperatureC?: number;
     temperatureF?: number;
     summary?: string | undefined;
@@ -1677,7 +1679,7 @@ export class WeatherForecast implements IWeatherForecast {
 
     init(_data?: any) {
         if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.date = _data["date"] ? moment(_data["date"].toString()) : <any>undefined;
             this.temperatureC = _data["temperatureC"];
             this.temperatureF = _data["temperatureF"];
             this.summary = _data["summary"];
@@ -1702,7 +1704,7 @@ export class WeatherForecast implements IWeatherForecast {
 }
 
 export interface IWeatherForecast {
-    date?: Date;
+    date?: moment.Moment;
     temperatureC?: number;
     temperatureF?: number;
     summary?: string | undefined;

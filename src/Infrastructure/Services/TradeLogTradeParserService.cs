@@ -3,6 +3,7 @@ using CsvHelper.Configuration.Attributes;
 using Firewatch.Application.Common.Interfaces;
 using Firewatch.Domain.Entities;
 using Firewatch.Domain.Enums;
+using Firewatch.Domain.ValueObjects;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -27,10 +28,14 @@ namespace Firewatch.Infrastructure.Services
 
         public string Format => "TradeLog";
 
+        
+        
+
         public FinancialAssetTypes[] SupportedFinancialAssets => new[] { FinancialAssetTypes.STOCKS };
 
         public IEnumerable<TradeExecution> ParseForOwner(Person owner, string contents)
         {
+            
             var accountNumber = ExtractAccountNumber(contents);
             var account = new BrokerageAccount(owner, accountNumber);
             account.Institution = "Interactive Brokers";
@@ -39,8 +44,9 @@ namespace Firewatch.Infrastructure.Services
             var records = ExtractRecords(contents);
             foreach (var record in records)
             {
-                if (record.TransactionType != "STK_TRD")
+                if (record.TransactionType != "STK_TRD" && record.TransactionType != "OPT_TRD")
                 {
+                    // TODO
                     continue;
                 }
 
@@ -68,6 +74,7 @@ namespace Firewatch.Infrastructure.Services
                 }
 
                 TradeVehicle vehicle;
+                var symbol = record.TickerSymbol;
                 switch (record.TransactionType)
                 {
                     case "STK_TRD":
@@ -75,8 +82,19 @@ namespace Firewatch.Infrastructure.Services
                         break;
                     case "OPT_TRD":
                         vehicle = TradeVehicle.OPTION;
+                        // IB provides unparsable garbage in the symbol category, so we parse the company name instead.
+                        // The problem is the unintelligible strike price, e.g. 'SPY   200722C00327000'; where should the 
+                        // decimal go?! Of course you and I can see it's $327.00, but tell RegEx that. 
+                        // It could be that the decimal is always 3 places in, but I don't want to build on that assumption 
+                        // when this easy workaround exists.
+                        var contract = OptionContract.For(record.CompanyName, IB_OPTION_NOMENCLATURE_PATTERN);
+                        symbol = contract.ToString();
+                        break;
+                    case "CASH_TRD":
+                        vehicle = TradeVehicle.CASH;
                         break;
                     default:
+                        _logger.LogWarning("Unable to determine vehicle for this trade type ({}), skipping it.", record.TransactionType);
                         continue;
                 }
 
@@ -88,13 +106,14 @@ namespace Firewatch.Infrastructure.Services
                     record.Action, 
                     tradeStatus, 
                     date, 
-                    record.TickerSymbol, 
+                    symbol, 
                     record.Quantity, 
                     unitPrice, 
                     commissions,
                     fees, 
-                    isPartial, 
-                    routes);
+                    isPartial: isPartial, 
+                    routes: routes,
+                    vehicle: vehicle);
 
                 trades.Add(trade);
             }
@@ -175,6 +194,9 @@ namespace Firewatch.Infrastructure.Services
         {
             return ExtractTransactions(contents, "OPT_TRD");
         }
+
+
+        public const string IB_OPTION_NOMENCLATURE_PATTERN = @"(?<symbol>\w+)\s+(?<day>\d{2})(?<month>[A-Z]+)(?<year>\d{2})\s(?<strike>\d+\.\d*)\s(?<type>\w)";
     }
 
     public class TradeLogRecord

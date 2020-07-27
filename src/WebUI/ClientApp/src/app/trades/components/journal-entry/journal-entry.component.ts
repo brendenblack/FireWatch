@@ -11,7 +11,6 @@ export class JournalEntryComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.expandedSymbols.includes
   }
 
   @Input() journal: JournalEntry;

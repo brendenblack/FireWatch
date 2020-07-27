@@ -9,6 +9,15 @@ namespace Firewatch.Application.Common.Services
 {
     public class TradeFactory
     {
+        /// <summary>
+        /// Groups <see cref="TradeExecution"/>s together from open to close of a positon on a single symbol. 
+        /// <para>
+        /// If the executions that opened or closed the position are not provided, then 
+        /// that sequence of executions will be ignored.
+        /// </para>
+        /// </summary>
+        /// <param name="executions"></param>
+        /// <returns></returns>
         public IEnumerable<Trade> ConstructIntradayTradesFromExecutions(IEnumerable<TradeExecution> executions)
         {
             var groupedExecutions = executions.GroupBy(e => new { e.Date.Date, e.Symbol })

@@ -91,7 +91,7 @@ namespace Firewatch.Domain.Entities
 
         public IEnumerable<TradeExecution> Executions { get; } = new List<TradeExecution>();
 
-        public void AddExecutions(params TradeExecution[] executions)
+        public virtual void AddExecutions(params TradeExecution[] executions)
         {
             foreach (var execution in executions)
             {

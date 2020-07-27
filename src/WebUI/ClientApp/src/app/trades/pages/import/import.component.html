@@ -22,3 +22,7 @@
     <h3>Contents <small>(debug)</small></h3>
     <pre>{{ importForm.get('fileContents').value }}</pre>
   </div>
+
+  <ngb-toast header="Import finished" *ngIf="toast" (hide)="toast = null">
+    Added {{ toast.created }} trades ({{ toast.ignored }} ignored as duplicates).
+  </ngb-toast>

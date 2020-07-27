@@ -20,9 +20,13 @@ namespace Firewatch.Infrastructure.UnitTests.Services.TradeLogParserServiceTests
         }
 
         [OneTimeSetUp]
-        public void ReadLocalTestFile()
+        public void LoadTestFile()
         {
-            var filename = "U3111111_20200316_20200501.tlg";
+            ReadLocalTestFile("U3111111_with_options.tlg");
+        }
+
+        public void ReadLocalTestFile(string filename)
+        {
             var dirName = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var file = Path.Combine(dirName, filename);
 
@@ -32,21 +36,16 @@ namespace Firewatch.Infrastructure.UnitTests.Services.TradeLogParserServiceTests
         private readonly TradeLogTradeParserService _sut;
         private  string _contents;
 
-        [Test]
-        public void ReturnValidRecords()
-        {
-            var records = _sut.ExtractRecords(_contents);
-
-            records.Count().ShouldBe(748);
-        }
-
         // These test case values come from manually parsing the test tlg file.
-        // If the input file changes, these tests will fail.
+        // If the input file changes, these tests will likely fail.
+        // STK_TRD|67428375|AAL|AMERICAN AIRLINES GROUP INC|ISLAND|SELLTOCLOSE|C|20200422|10:17:04|USD|-331.00|1.00|10.61|-3511.91|-1.772002|1.00
+        // OPT_TRD|75293258|SPY   200722C00326000|SPY 22JUL20 326.0 C|CBOE2|BUYTOOPEN|O|20200722|09:35:20|USD|2.00|100.00|0.64|128.00|-0.6476|1.00
         [Test]
-        [TestCase(64317112, "AMD", "SELLTOCLOSE", "20200316", "09:55:33", -50, 40.59, -1.050802)]
-        // STK_TRD|64317112|AMD|ADVANCED MICRO DEVICES|DRCTEDGE|SELLTOCLOSE|C|20200316|09:55:33|USD|-50.00|1.00|40.59|-2029.50|-1.050802|1.00
-        public void ParseRecords(
+        [TestCase(67428375, "STK_TRD", "AAL", "SELLTOCLOSE", "20200422", "10:17:04", -331, 10.61, -1.772002)]
+        [TestCase(75293258, "OPT_TRD", "SPY   200722C00326000", "BUYTOOPEN", "20200722", "09:35:20", 2, 0.64, -0.6476)]
+         public void ParseRecords(
             int tradeId,
+            string expectedTransactionType,
             string expectedSymbol,
             string expectedAction,
             string expectedDate,
@@ -58,6 +57,7 @@ namespace Firewatch.Infrastructure.UnitTests.Services.TradeLogParserServiceTests
             var records = _sut.ExtractRecords(_contents);
 
             var record = records.First(r => r.TransactionId == tradeId);
+            record.TransactionType.ShouldBe(expectedTransactionType);
             record.TickerSymbol.ShouldBe(expectedSymbol);
             record.Action.ShouldBe(expectedAction);
             record.Date.ShouldBe(expectedDate);
@@ -67,4 +67,6 @@ namespace Firewatch.Infrastructure.UnitTests.Services.TradeLogParserServiceTests
             record.Commissions.ShouldBe(expectedCommissions);
         }
     }
+
+
 }

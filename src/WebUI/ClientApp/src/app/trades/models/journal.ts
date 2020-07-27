@@ -1,4 +1,4 @@
-import { TradeExecutionDto } from "src/app/firewatch-api";
+import { TradeExecutionDto, CostModel } from "src/app/firewatch-api";
 
 export class JournalEntry {
     constructor(date: moment.Moment) {
@@ -54,10 +54,12 @@ export class JournalEntry {
 export class JournalSymbol {
     constructor(symbol: string, executions: TradeExecutionDto[]) {
       this.symbol = symbol;
-      this.executions = executions.sort((a, b) => { return b.date.valueOf() - a.date.valueOf() }); 
+      this.executions = executions
+        .map(e => new JournalExecution(e))
+        .sort((a, b) => { return a.date.valueOf() - b.date.valueOf() }); 
     }
     symbol: string;
-    executions: TradeExecutionDto[] = [];
+    executions: JournalExecution[] = [];
   
     executionCount() {
       return this.executions.length;
@@ -84,11 +86,16 @@ export class JournalSymbol {
         .map(e => e.commissions.amount)
         .reduce((a, b) => a + b);
     }
-  
+
     profitAndLoss(includeFeesAndCommissions: boolean = false): number {
       let pnl = 0;
       for (let execution of this.executions) {
-        pnl += ((execution.unitPrice.amount * execution.quantity) * - 1);
+        if (execution.vehicle === 'STOCK') {
+          pnl += ((execution.unitPrice.amount * execution.quantity) * - 1);
+        } else if (execution.vehicle === 'OPTION') {
+          pnl += ((execution.unitPrice.amount * execution.quantity) * - 1 * 100);
+        }
+        
         if (includeFeesAndCommissions) {
           // fees and commissions are negative values, so we add them to the total
           pnl += execution.fees.amount;
@@ -97,4 +104,41 @@ export class JournalSymbol {
       }
       return pnl;
     }
+  }
+
+  export class JournalExecution {
+    constructor(dto: TradeExecutionDto) {
+      this.date = dto.date;
+      this.symbol = dto.symbol;
+      this.action = dto.action;
+      this.actionType = dto.actionType;
+      this.fees = dto.fees;
+      this.commissions = dto.commissions;
+      this.unitPrice = dto.unitPrice;
+      this.status = dto.status;
+      this.vehicle = dto.vehicle;
+      this.quantity = dto.quantity;
+      
+    }
+
+    date: moment.Moment;
+    action: string;
+    symbol: string;
+    quantity: number;
+    commissions: CostModel;
+    fees: CostModel;
+    actionType: string;
+    unitPrice: CostModel;
+    status: string;
+    vehicle: string;
+
+    proceeds(): number {
+      if (this.vehicle === 'STOCK') {
+        return ((this.unitPrice.amount * this.quantity) * - 1);
+      } else if (this.vehicle === 'OPTION') {
+        return ((this.unitPrice.amount * this.quantity) * - 1 * 100);
+      }
+    }
+
+
   }

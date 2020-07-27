@@ -1,15 +1,10 @@
 ﻿using Firewatch.Application.Common.Interfaces;
-using Firewatch.Application.Investments.Commands.ImportTrades;
 using Firewatch.Application.Investments.Commands.ParseAndImportTrades;
 using Firewatch.Application.Investments.Queries.GetTradeExecutions;
 using Firewatch.Application.Investments.Queries.GetTrades;
-using Firewatch.Application.Investments.Queries.ParseTrades;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Firewatch.WebUI.Controllers

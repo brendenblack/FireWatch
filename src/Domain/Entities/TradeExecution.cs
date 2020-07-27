@@ -37,7 +37,7 @@ namespace Firewatch.Domain.Entities
             Symbol = symbol ?? throw new ArgumentNullException(nameof(symbol));
             Quantity = quantity;
             UnitPrice = unitPrice;
-            Routes = (routes == null) ? routes.ToHashSet() : new HashSet<string>();
+            Routes = (routes == null) ? new HashSet<string>() : routes.ToHashSet();
             Commissions = commissions ?? new Price();
             Fees = fees ?? new Price();
             IsPartialExecution = isPartial;
