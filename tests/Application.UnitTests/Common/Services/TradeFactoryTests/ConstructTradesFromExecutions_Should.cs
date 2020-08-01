@@ -11,7 +11,7 @@ using System.Text;
 
 namespace Firewatch.Application.UnitTests.Common.Services.TradeFactoryTests
 {
-    public class ConstructTradesFromExecutions_Should
+    public class ConstructTradesFromExecutions_Should : TradeFactoryTestBase
     {
         public ConstructTradesFromExecutions_Should()
         {
@@ -60,13 +60,53 @@ namespace Firewatch.Application.UnitTests.Common.Services.TradeFactoryTests
             },
         };
         
-        [Test]
-        [TestCaseSource(nameof(TradeTestCases))]
-        public void ShouldDo(TradeTestCase testCase)
-        {
-            var trades = sut.ConstructTradesFromExecutions(testCase.Executions);
+        //[Test]
+        //[TestCaseSource(nameof(TradeTestCases))]
+        //public void ShouldDo(TradeTestCase testCase)
+        //{
+        //    var trades = sut.ConstructTradesFromExecutions(testCase.Executions);
 
-            trades.Count().Should().Be(testCase.ExpectedTradeCount);
+        //    trades.Count().Should().Be(testCase.ExpectedTradeCount);
+        //}
+
+        [Test]
+        [TestCase("test1.tlg", 9)]
+        [TestCase("test2.tlg", 6)]
+        [TestCase("2020-07-27.tlg", 19)]
+        public void ShouldCorrectlyAssembleTrades(string filename, int expectedTradeCount)
+        {
+            var executions = PopulateTradeExecutionsWithFile(filename);
+
+            var trades = sut.ConstructTradesFromExecutions(executions);
+
+            trades.Count().Should().Be(expectedTradeCount);
         }
+
+        [Test]
+        [TestCase("test1.tlg", 1)]
+        public void ShouldCorrectlyIdentifySwingTrades(string filename, int expectedSwingTradeCount)
+        {
+            var executions = PopulateTradeExecutionsWithFile(filename);
+
+            var trades = sut.ConstructTradesFromExecutions(executions);
+
+            
+            trades.Where(t => !t.IsIntraDay).Count().Should().Be(expectedSwingTradeCount);
+        }
+
+        [Test]
+        [TestCase("test1.tlg", 1)]
+        public void ShouldCorrectlyIdentifyShortTrades(string filename, int expectedShortTradeCount)
+        {
+            var executions = PopulateTradeExecutionsWithFile(filename);
+
+            var trades = sut.ConstructTradesFromExecutions(executions);
+            
+            var trade = trades.Where(t => t.Symbol == "WKHS").First();
+
+            trades.Where(t => t.Side == TradeSides.SHORT).Count().Should().Be(expectedShortTradeCount);
+        }
+
+
     }
 }

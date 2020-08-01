@@ -5,6 +5,7 @@ using Firewatch.Application.Investments.Queries.GetTrades;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.SqlServer.Storage.Internal;
 using System.Threading.Tasks;
 
 namespace Firewatch.WebUI.Controllers
@@ -60,7 +61,8 @@ namespace Firewatch.WebUI.Controllers
                 To = to.ToDate()
             };
 
-            return await _mediator.Send(query);
+            var vm = await _mediator.Send(query);
+            return vm;
         }
 
         [HttpGet("executions")]
@@ -72,6 +74,21 @@ namespace Firewatch.WebUI.Controllers
                 RequestorId = _currentUserService.UserId,
                 From = from.ToDate(),
                 To = to.ToDate()
+            };
+
+            return await _mediator.Send(query);
+        }
+
+        [HttpGet("{accountId}/trades")]
+        public async Task<ActionResult<GetTradesVm>> GetTradesForAccount([FromRoute] int accountId, [FromQuery] string? from = "", [FromQuery] string? to = "")
+        {
+            var query = new GetTradesQuery
+            {
+                AccountId = accountId,
+                OwnerId = _currentUserService.UserId,
+                RequestorId = _currentUserService.UserId,
+                From = from.ToDate(behaviour: DateTimeBehaviours.StartOfDay),
+                To = to.ToDate(behaviour: DateTimeBehaviours.EndOfDay)
             };
 
             return await _mediator.Send(query);

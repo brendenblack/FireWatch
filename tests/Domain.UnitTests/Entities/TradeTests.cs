@@ -47,6 +47,8 @@ namespace Firewatch.Domain.UnitTests.Entities
 
         public class IndividualTradeTestCase
         {
+
+            public string Symbol { get; set; }
             public TradeExecution[] Executions { get; set; }
             public decimal ExpectedVolume { get; set; }
 
@@ -71,11 +73,12 @@ namespace Firewatch.Domain.UnitTests.Entities
                     // Straight-forward
                     new IndividualTradeTestCase
                     {
+                        Symbol = "AMD",
                         Executions = new []
                         {
-                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD")),
-                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD")),
-                            new TradeExecution(account, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(3m, "USD"))
+                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(-3m, "USD")),
+                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(-3m, "USD")),
+                            new TradeExecution(account, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(-3m, "USD"))
                         },
                         ExpectedVolume = 200m,
                         ExpectedPositionSize = 0m,
@@ -88,18 +91,36 @@ namespace Firewatch.Domain.UnitTests.Entities
                     // Unrelated executions (should be ignored)
                     new IndividualTradeTestCase
                     {
+                        Symbol = "AMD",
                         Executions = new []
                         {
-                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, DateTime.Now, "AAPL", 10m, new Price(-3000m, "USD"), new Price(3m, "USD"), new Price()),
-                            new TradeExecution(account, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(3m, "USD"), new Price())
+                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(-3m, "USD"), new Price()),
+                            new TradeExecution(account, DateTime.Now, "AMD", 50m, new Price(50m, "USD"), new Price(-3m, "USD"), new Price()),
+                            new TradeExecution(account, DateTime.Now, "AAPL", 10m, new Price(-3000m, "USD"), new Price(-3m, "USD"), new Price()),
+                            new TradeExecution(account, DateTime.Now, "AMD", -100m, new Price(54m, "USD"), new Price(-3m, "USD"), new Price())
                         },
                         ExpectedVolume = 200m,
                         ExpectedPositionSize = 0m,
                         ExpectedStatus = TradeState.CLOSED,
                         ExpectedGrossProfitAndLoss = 400m,
                         ExpectedNetProfitAndLoss = 391m,
+                        ExpectedExecutionCount = 3,
+                    },
+                    // Option trades
+                    new IndividualTradeTestCase
+                    {
+                        Symbol = "SPY 20200722 327.00 C",
+                        Executions = new []
+                        {
+                            new TradeExecution(account, DateTime.Now, "SPY 20200722 327.00 C", 1m, new Price(1.13m, "USD"), new Price(-0.72m, "USD"), new Price(), TradeActions.BUY_TO_OPEN, vehicle: TradeVehicle.OPTION),
+                            new TradeExecution(account, DateTime.Now, "SPY 20200722 327.00 C", 1m, new Price(1m, "USD"), new Price(-1.09m, "USD"), new Price(), TradeActions.BUY_TO_OPEN, vehicle: TradeVehicle.OPTION),
+                            new TradeExecution(account, DateTime.Now, "SPY 20200722 327.00 C", -2m, new Price(0.97m, "USD"), new Price(-1.50m, "USD"), new Price(), TradeActions.SELL_TO_CLOSE, vehicle: TradeVehicle.OPTION),   
+                        },
+                        ExpectedVolume = 4,
+                        ExpectedPositionSize = 0m,
+                        ExpectedStatus = TradeState.CLOSED,
+                        ExpectedGrossProfitAndLoss = -19m,
+                        ExpectedNetProfitAndLoss = -22.31m,
                         ExpectedExecutionCount = 3,
                     }
                 };
@@ -110,7 +131,7 @@ namespace Firewatch.Domain.UnitTests.Entities
         [TestCaseSource(nameof(IndividualTradeTestCases))]
         public void ShouldCalculateExpectedValues(IndividualTradeTestCase testCase)
         {
-            var trade = new Trade("AMD");
+            var trade = new Trade(testCase.Symbol);
             trade.AddExecutions(testCase.Executions.ToArray());
 
             trade.ExecutionCount.ShouldBe(testCase.ExpectedExecutionCount);
@@ -134,7 +155,6 @@ namespace Firewatch.Domain.UnitTests.Entities
 
             sut.IsClosed.ShouldBeTrue();
             sut.IsIntraDay.ShouldBeTrue();
-            sut.IsSwing.ShouldBeFalse();
         }
 
         [Test]
@@ -149,8 +169,11 @@ namespace Firewatch.Domain.UnitTests.Entities
 
             sut.IsClosed.ShouldBeTrue();
             sut.IsIntraDay.ShouldBeFalse();
-            sut.IsSwing.ShouldBeTrue();
         }
+
+        
+
+       
 
     }
 }

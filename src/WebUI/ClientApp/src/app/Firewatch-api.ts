@@ -17,7 +17,8 @@ import * as moment from 'moment';
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IAccountsClient {
-    get(id: number): Observable<FileResponse>;
+    getAccounts(): Observable<AccountsVm>;
+    getAccountById(id: number): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -33,7 +34,55 @@ export class AccountsClient implements IAccountsClient {
         this.baseUrl = baseUrl ? baseUrl : "";
     }
 
-    get(id: number): Observable<FileResponse> {
+    getAccounts(): Observable<AccountsVm> {
+        let url_ = this.baseUrl + "/api/accounts";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAccounts(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAccounts(<any>response_);
+                } catch (e) {
+                    return <Observable<AccountsVm>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<AccountsVm>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAccounts(response: HttpResponseBase): Observable<AccountsVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AccountsVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<AccountsVm>(<any>null);
+    }
+
+    getAccountById(id: number): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/accounts/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -49,11 +98,11 @@ export class AccountsClient implements IAccountsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
+            return this.processGetAccountById(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGet(<any>response_);
+                    return this.processGetAccountById(<any>response_);
                 } catch (e) {
                     return <Observable<FileResponse>><any>_observableThrow(e);
                 }
@@ -62,7 +111,7 @@ export class AccountsClient implements IAccountsClient {
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<FileResponse> {
+    protected processGetAccountById(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -87,6 +136,7 @@ export interface IInvestmentsClient {
     importTrades(model: ParseTradesModel): Observable<ParseAndImportTradesResponse>;
     getTrades(from: string | null | undefined, to: string | null | undefined): Observable<GetTradesVm>;
     getExecutions(from: string | null | undefined, to: string | null | undefined): Observable<TradeExecutionsVm>;
+    getTradesForAccount(accountId: number, from: string | null | undefined, to: string | null | undefined): Observable<GetTradesVm>;
     getExecutionsForAccount(accountNumber: string | null, from: string | null | undefined, to: string | null | undefined): Observable<TradeExecutionsVm>;
 }
 
@@ -257,6 +307,61 @@ export class InvestmentsClient implements IInvestmentsClient {
             }));
         }
         return _observableOf<TradeExecutionsVm>(<any>null);
+    }
+
+    getTradesForAccount(accountId: number, from: string | null | undefined, to: string | null | undefined): Observable<GetTradesVm> {
+        let url_ = this.baseUrl + "/api/Investments/{accountId}/trades?";
+        if (accountId === undefined || accountId === null)
+            throw new Error("The parameter 'accountId' must be defined.");
+        url_ = url_.replace("{accountId}", encodeURIComponent("" + accountId));
+        if (from !== undefined && from !== null)
+            url_ += "from=" + encodeURIComponent("" + from) + "&";
+        if (to !== undefined && to !== null)
+            url_ += "to=" + encodeURIComponent("" + to) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTradesForAccount(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTradesForAccount(<any>response_);
+                } catch (e) {
+                    return <Observable<GetTradesVm>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GetTradesVm>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTradesForAccount(response: HttpResponseBase): Observable<GetTradesVm> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GetTradesVm.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GetTradesVm>(<any>null);
     }
 
     getExecutionsForAccount(accountNumber: string | null, from: string | null | undefined, to: string | null | undefined): Observable<TradeExecutionsVm> {
@@ -887,6 +992,94 @@ export class WeatherForecastClient implements IWeatherForecastClient {
     }
 }
 
+export class AccountsVm implements IAccountsVm {
+    accounts?: AccountDto[] | undefined;
+
+    constructor(data?: IAccountsVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["accounts"])) {
+                this.accounts = [] as any;
+                for (let item of _data["accounts"])
+                    this.accounts!.push(AccountDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): AccountsVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new AccountsVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.accounts)) {
+            data["accounts"] = [];
+            for (let item of this.accounts)
+                data["accounts"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface IAccountsVm {
+    accounts?: AccountDto[] | undefined;
+}
+
+export class AccountDto implements IAccountDto {
+    id?: number;
+    displayName?: string | undefined;
+    type?: string | undefined;
+
+    constructor(data?: IAccountDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.displayName = _data["displayName"];
+            this.type = _data["type"];
+        }
+    }
+
+    static fromJS(data: any): AccountDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new AccountDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["displayName"] = this.displayName;
+        data["type"] = this.type;
+        return data; 
+    }
+}
+
+export interface IAccountDto {
+    id?: number;
+    displayName?: string | undefined;
+    type?: string | undefined;
+}
+
 export class ParseAndImportTradesResponse implements IParseAndImportTradesResponse {
     duplicates?: number;
     createdIds?: number[] | undefined;
@@ -1020,6 +1213,20 @@ export interface IGetTradesVm {
 }
 
 export class TradeDto implements ITradeDto {
+    open?: moment.Moment;
+    close?: moment.Moment;
+    vehicle?: string | undefined;
+    side?: string | undefined;
+    symbol?: string | undefined;
+    state?: string | undefined;
+    position?: number;
+    executionCount?: number;
+    volume?: number;
+    netProfitAndLoss?: number;
+    grossProfitAndLoss?: number;
+    isClosed?: boolean;
+    isIntraDay?: boolean;
+    executions?: TradeExecutionDto[] | undefined;
 
     constructor(data?: ITradeDto) {
         if (data) {
@@ -1031,6 +1238,26 @@ export class TradeDto implements ITradeDto {
     }
 
     init(_data?: any) {
+        if (_data) {
+            this.open = _data["open"] ? moment(_data["open"].toString()) : <any>undefined;
+            this.close = _data["close"] ? moment(_data["close"].toString()) : <any>undefined;
+            this.vehicle = _data["vehicle"];
+            this.side = _data["side"];
+            this.symbol = _data["symbol"];
+            this.state = _data["state"];
+            this.position = _data["position"];
+            this.executionCount = _data["executionCount"];
+            this.volume = _data["volume"];
+            this.netProfitAndLoss = _data["netProfitAndLoss"];
+            this.grossProfitAndLoss = _data["grossProfitAndLoss"];
+            this.isClosed = _data["isClosed"];
+            this.isIntraDay = _data["isIntraDay"];
+            if (Array.isArray(_data["executions"])) {
+                this.executions = [] as any;
+                for (let item of _data["executions"])
+                    this.executions!.push(TradeExecutionDto.fromJS(item));
+            }
+        }
     }
 
     static fromJS(data: any): TradeDto {
@@ -1042,44 +1269,19 @@ export class TradeDto implements ITradeDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        return data; 
-    }
-}
-
-export interface ITradeDto {
-}
-
-export class TradeExecutionsVm implements ITradeExecutionsVm {
-    executions?: TradeExecutionDto[] | undefined;
-
-    constructor(data?: ITradeExecutionsVm) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["executions"])) {
-                this.executions = [] as any;
-                for (let item of _data["executions"])
-                    this.executions!.push(TradeExecutionDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): TradeExecutionsVm {
-        data = typeof data === 'object' ? data : {};
-        let result = new TradeExecutionsVm();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
+        data["open"] = this.open ? this.open.toISOString() : <any>undefined;
+        data["close"] = this.close ? this.close.toISOString() : <any>undefined;
+        data["vehicle"] = this.vehicle;
+        data["side"] = this.side;
+        data["symbol"] = this.symbol;
+        data["state"] = this.state;
+        data["position"] = this.position;
+        data["executionCount"] = this.executionCount;
+        data["volume"] = this.volume;
+        data["netProfitAndLoss"] = this.netProfitAndLoss;
+        data["grossProfitAndLoss"] = this.grossProfitAndLoss;
+        data["isClosed"] = this.isClosed;
+        data["isIntraDay"] = this.isIntraDay;
         if (Array.isArray(this.executions)) {
             data["executions"] = [];
             for (let item of this.executions)
@@ -1089,7 +1291,20 @@ export class TradeExecutionsVm implements ITradeExecutionsVm {
     }
 }
 
-export interface ITradeExecutionsVm {
+export interface ITradeDto {
+    open?: moment.Moment;
+    close?: moment.Moment;
+    vehicle?: string | undefined;
+    side?: string | undefined;
+    symbol?: string | undefined;
+    state?: string | undefined;
+    position?: number;
+    executionCount?: number;
+    volume?: number;
+    netProfitAndLoss?: number;
+    grossProfitAndLoss?: number;
+    isClosed?: boolean;
+    isIntraDay?: boolean;
     executions?: TradeExecutionDto[] | undefined;
 }
 
@@ -1203,6 +1418,122 @@ export class CostModel implements ICostModel {
 export interface ICostModel {
     amount?: number;
     currency?: string | undefined;
+}
+
+export class TradeExecutionsVm implements ITradeExecutionsVm {
+    executions?: TradeExecutionDto2[] | undefined;
+
+    constructor(data?: ITradeExecutionsVm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["executions"])) {
+                this.executions = [] as any;
+                for (let item of _data["executions"])
+                    this.executions!.push(TradeExecutionDto2.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): TradeExecutionsVm {
+        data = typeof data === 'object' ? data : {};
+        let result = new TradeExecutionsVm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.executions)) {
+            data["executions"] = [];
+            for (let item of this.executions)
+                data["executions"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface ITradeExecutionsVm {
+    executions?: TradeExecutionDto2[] | undefined;
+}
+
+export class TradeExecutionDto2 implements ITradeExecutionDto2 {
+    date?: moment.Moment;
+    intent?: string | undefined;
+    action?: string | undefined;
+    actionType?: string | undefined;
+    symbol?: string | undefined;
+    vehicle?: string | undefined;
+    quantity?: number;
+    unitPrice?: CostModel | undefined;
+    commissions?: CostModel | undefined;
+    fees?: CostModel | undefined;
+
+    constructor(data?: ITradeExecutionDto2) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.date = _data["date"] ? moment(_data["date"].toString()) : <any>undefined;
+            this.intent = _data["intent"];
+            this.action = _data["action"];
+            this.actionType = _data["actionType"];
+            this.symbol = _data["symbol"];
+            this.vehicle = _data["vehicle"];
+            this.quantity = _data["quantity"];
+            this.unitPrice = _data["unitPrice"] ? CostModel.fromJS(_data["unitPrice"]) : <any>undefined;
+            this.commissions = _data["commissions"] ? CostModel.fromJS(_data["commissions"]) : <any>undefined;
+            this.fees = _data["fees"] ? CostModel.fromJS(_data["fees"]) : <any>undefined;
+        }
+    }
+
+    static fromJS(data: any): TradeExecutionDto2 {
+        data = typeof data === 'object' ? data : {};
+        let result = new TradeExecutionDto2();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["intent"] = this.intent;
+        data["action"] = this.action;
+        data["actionType"] = this.actionType;
+        data["symbol"] = this.symbol;
+        data["vehicle"] = this.vehicle;
+        data["quantity"] = this.quantity;
+        data["unitPrice"] = this.unitPrice ? this.unitPrice.toJSON() : <any>undefined;
+        data["commissions"] = this.commissions ? this.commissions.toJSON() : <any>undefined;
+        data["fees"] = this.fees ? this.fees.toJSON() : <any>undefined;
+        return data; 
+    }
+}
+
+export interface ITradeExecutionDto2 {
+    date?: moment.Moment;
+    intent?: string | undefined;
+    action?: string | undefined;
+    actionType?: string | undefined;
+    symbol?: string | undefined;
+    vehicle?: string | undefined;
+    quantity?: number;
+    unitPrice?: CostModel | undefined;
+    commissions?: CostModel | undefined;
+    fees?: CostModel | undefined;
 }
 
 export class CreateTodoItemCommand implements ICreateTodoItemCommand {

@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 
 @Component({
   selector: 'app-nav-menu',
@@ -7,6 +8,11 @@ import { Component } from '@angular/core';
 })
 export class NavMenuComponent {
   isExpanded = false;
+  isAuthenticated = false;
+
+  constructor(private authorize: AuthorizeService) {
+    this.authorize.isAuthenticated().subscribe(isAuthenticated => this.isAuthenticated = isAuthenticated);
+  }
 
   collapse() {
     this.isExpanded = false;

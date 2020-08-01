@@ -1,0 +1,13 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+            <app-monthly-calendar [accountId]="accountId" [year]="year" [month]="month" [journalEntries]="journals"></app-monthly-calendar>
+        </div>
+        <div class="col-lg-3">
+
+        </div>
+    </div>
+    <div class="row">
+        {{ mtdPnl | currency: 'USD' }}
+    </div>
+</div>

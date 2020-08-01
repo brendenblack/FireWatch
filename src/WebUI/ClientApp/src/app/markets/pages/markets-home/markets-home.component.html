@@ -1,0 +1,7 @@
+<p>markets-home works!</p>
+
+<ul *ngFor="let account of accounts">
+    <li>
+        <a [routerLink]="[ account.id, 'calendar' ]">{{ (account.displayName) ? account.displayName : 'Account ' + account.id }}</a>
+    </li>
+</ul>

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Firewatch.Application.Common.Interfaces;
+using Firewatch.Application.Common.Services;
 using Firewatch.Domain.Entities;
 using Firewatch.Domain.Enums;
 using MediatR;
@@ -17,7 +18,7 @@ namespace Firewatch.Application.Investments.Queries.GetTrades
 {
     public class GetTradesQuery : PersonScopedAuthorizationRequiredRequest, IRequest<GetTradesVm>
     {
-        public string AccountNumber { get; set; }
+        public int AccountId { get; set; }
         public DateTime From { get; set; } = DateTime.MinValue;
 
         public DateTime To { get; set; } = DateTime.MaxValue;
@@ -28,46 +29,56 @@ namespace Firewatch.Application.Investments.Queries.GetTrades
         private readonly ILogger<GetTradesHandler> _logger;
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly TradeFactory _tradeFactory;
 
-        public GetTradesHandler(ILogger<GetTradesHandler> logger, IApplicationDbContext context, IMapper mapper)
+        public GetTradesHandler(ILogger<GetTradesHandler> logger, IApplicationDbContext context, IMapper mapper, TradeFactory tradeFactory)
         {
             _logger = logger;
             _context = context;
             _mapper = mapper;
+            _tradeFactory = tradeFactory;
         }
 
         public async Task<GetTradesVm> Handle(GetTradesQuery request, CancellationToken cancellationToken)
         {
+            if (request.From == request.To)
+            {
+                request.From = new DateTime(request.From.Year, request.From.Month, request.From.Day, 0, 0, 0);
+                request.To = new DateTime(request.To.Year, request.To.Month, request.To.Day, 23, 59, 59);
+            }
+
             var executions = await _context.TradeExecutions
                 .Where(t => t.Account.OwnerId == request.OwnerId) // TODO: push to validation?
-                .Where(t => t.Account.AccountNumber == request.AccountNumber)
+                .Where(t => t.AccountId == request.AccountId)
                 .Where(t => t.Date >= request.From)
                 .Where(t => t.Date <= request.To)
                 .ToListAsync();
 
-            var groupedExecutions = executions
-                .GroupBy(t => t.Symbol)
-                .Select(g => new { Symbol = g.Key, Executions = g.AsEnumerable() });
+            var trades = _tradeFactory.ConstructTradesFromExecutions(executions);
 
-            var trades = new List<Trade>();
-            foreach (var group in groupedExecutions)
-            {
-                var trade = new Trade(group.Symbol);
-                trades.Add(trade);
-                foreach (var execution in group.Executions)
-                {
-                    if (trade.Executions.Count() == 0 || trade.State == TradeState.OPEN)
-                    {
-                        trade.AddExecutions(execution);
-                    }
-                    else
-                    {
-                        trades.Add(trade);
-                        trade = new Trade(group.Symbol);
-                        trade.AddExecutions(execution);
-                    }
-                }
-            }
+            //var groupedExecutions = executions
+            //    .GroupBy(t => t.Symbol)
+            //    .Select(g => new { Symbol = g.Key, Executions = g.AsEnumerable() });
+
+            //var trades = new List<Trade>();
+            //foreach (var group in groupedExecutions)
+            //{
+            //    var trade = new Trade(group.Symbol);
+            //    trades.Add(trade);
+            //    foreach (var execution in group.Executions)
+            //    {
+            //        if (trade.Executions.Count() == 0 || trade.State == TradeState.OPEN)
+            //        {
+            //            trade.AddExecutions(execution);
+            //        }
+            //        else
+            //        {
+            //            trades.Add(trade);
+            //            trade = new Trade(group.Symbol);
+            //            trade.AddExecutions(execution);
+            //        }
+            //    }
+            //}
 
             
 

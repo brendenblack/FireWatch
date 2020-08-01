@@ -6,12 +6,37 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/accounts": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "operationId": "Accounts_GetAccounts",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/accounts/{id}": {
       "get": {
         "tags": [
           "Accounts"
         ],
-        "operationId": "Accounts_Get",
+        "operationId": "Accounts_GetAccountById",
         "parameters": [
           {
             "name": "id",
@@ -159,6 +184,63 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TradeExecutionsVm"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Investments/{accountId}/trades": {
+      "get": {
+        "tags": [
+          "Investments"
+        ],
+        "operationId": "Investments_GetTradesForAccount",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 2
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "default": "",
+              "nullable": true
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetTradesVm"
                 }
               }
             }
@@ -610,6 +692,37 @@
   },
   "components": {
     "schemas": {
+      "AccountsVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/AccountDto"
+            }
+          }
+        }
+      },
+      "AccountDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "displayName": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "ParseAndImportTradesResponse": {
         "type": "object",
         "additionalProperties": false,
@@ -657,12 +770,58 @@
       },
       "TradeDto": {
         "type": "object",
-        "additionalProperties": false
-      },
-      "TradeExecutionsVm": {
-        "type": "object",
         "additionalProperties": false,
         "properties": {
+          "open": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "close": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "vehicle": {
+            "type": "string",
+            "nullable": true
+          },
+          "side": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "type": "string",
+            "nullable": true
+          },
+          "position": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "executionCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "volume": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "netProfitAndLoss": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "grossProfitAndLoss": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "isClosed": {
+            "type": "boolean"
+          },
+          "isIntraDay": {
+            "type": "boolean"
+          },
           "executions": {
             "type": "array",
             "nullable": true,
@@ -741,6 +900,77 @@
           "currency": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "TradeExecutionsVm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "executions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/TradeExecutionDto2"
+            }
+          }
+        }
+      },
+      "TradeExecutionDto2": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "intent": {
+            "type": "string",
+            "nullable": true
+          },
+          "action": {
+            "type": "string",
+            "nullable": true
+          },
+          "actionType": {
+            "type": "string",
+            "nullable": true
+          },
+          "symbol": {
+            "type": "string",
+            "nullable": true
+          },
+          "vehicle": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantity": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "unitPrice": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          },
+          "commissions": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
+          },
+          "fees": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/CostModel"
+              }
+            ]
           }
         }
       },

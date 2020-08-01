@@ -1,0 +1,42 @@
+<p>trades-test works!</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Vehicle</th>
+            <th>Date</th>
+            <th>Symbol</th>
+            <th class="text-right">Entry</th>
+            <th class="text-right">Exit</th>
+            <th class="text-right">Size</th>
+            <th>Side</th>
+            <th>Result</th>
+            <th class="text-right">Return ($)</th>
+            <th class="text-right">Return (%)</th>
+        </tr>
+        
+    </thead>
+    <tbody *ngFor="let journal of journals">
+        <tr *ngFor="let trade of journal.trades">
+            <td>
+                <span *ngIf="trade.vehicle === 'STOCK'" class="badge badge-primary">Stock</span>
+                <span *ngIf="trade.vehicle === 'OPTION'" class="badge badge-secondary">Option</span>
+            </td>
+            <td>{{ trade.close.format('MMM DD, yyyy') }}</td>
+            <td>{{ trade.symbol }}</td>
+            <td class="text-right">{{ trade.averageEntry | currency: 'USD' }}</td>
+            <td class="text-right">{{ trade.averageExit | currency: 'USD' }}</td>
+            <td class="text-right">{{ trade.volume }}</td>
+            <td>
+                <span *ngIf="trade.side === 'LONG'" class="badge badge-primary">LONG</span>
+                <span *ngIf="trade.side === 'SHORT'" class="badge badge-secondary">SHORT</span>
+            </td>
+            <td>
+                <span *ngIf="trade.netProceeds >= 0" class="badge badge-success">WIN</span>
+                <span *ngIf="trade.netProceeds < 0" class="badge badge-danger">LOSS</span>
+            </td>
+            <td class="text-right" [ngClass]="{ 'text-danger': trade.netProceeds < 0 }"><strong>{{ trade.netProceeds | currency: 'USD' }}</strong></td>
+            <td class="text-right" [ngClass]="{ 'text-danger': trade.netProceeds < 0 }">{{ trade.percentReturn | percent: '1.0-2' }}</td>
+        </tr>
+    </tbody>
+</table>

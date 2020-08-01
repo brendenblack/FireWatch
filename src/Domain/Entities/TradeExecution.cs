@@ -94,9 +94,6 @@ namespace Firewatch.Domain.Entities
         /// <summary>
         /// Calculates the net value, including fees & commissions.
         /// </summary>
-        /// <remarks>
-        /// This method currently only supports buy-to-open and sell-to-close calculations.
-        /// </remarks>
         public decimal TotalValue
         {
             get
@@ -120,12 +117,14 @@ namespace Firewatch.Domain.Entities
         }
 
         /// <summary>
-        /// How much the broker charged in commissions to execute this order.
+        /// How much the broker charged in commissions to execute this order. The amount will be negative for
+        /// commissions taken, or positive for a refund.
         /// </summary>
         public Price Commissions { get; private set; } = new Price();
 
         /// <summary>
-        /// How much the broker and routes charged in fees to execute this order.
+        /// How much the broker and routes charged in fees to execute this order. The amount will
+        /// be negative for a charged fee, and positive for a refund.
         /// </summary>
         public Price Fees { get; private set; } = new Price();
 
@@ -146,7 +145,7 @@ namespace Firewatch.Domain.Entities
         /// <summary>
         /// Whether this execution was a partial fill by the platform.
         /// </summary>
-        public bool IsPartialExecution { get; private set; } = false;
+        public bool IsPartialExecution { get; private set; }
 
         public override string ToString()
         {

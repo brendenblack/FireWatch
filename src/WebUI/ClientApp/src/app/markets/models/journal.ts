@@ -115,7 +115,7 @@ export class JournalSymbol {
       this.fees = dto.fees;
       this.commissions = dto.commissions;
       this.unitPrice = dto.unitPrice;
-      this.status = dto.status;
+      this.intent = dto.intent;
       this.vehicle = dto.vehicle;
       this.quantity = dto.quantity;
       
@@ -129,7 +129,7 @@ export class JournalSymbol {
     fees: CostModel;
     actionType: string;
     unitPrice: CostModel;
-    status: string;
+    intent: string;
     vehicle: string;
 
     proceeds(): number {

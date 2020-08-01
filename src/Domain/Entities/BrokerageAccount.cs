@@ -21,6 +21,7 @@ namespace Firewatch.Domain.Entities
             : base(owner)
         {
             AccountNumber = accountNumber;
+            DisplayName = accountNumber;
         }
 
         public override string AccountType { get; protected set; } = AccountConstants.BROKERAGE;

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Firewatch.Application.Investments.Queries.GetTradeExecutions
+namespace Firewatch.Application.Investments.Queries.GetTrades
 {
     public class TradeExecutionDto : IMapFrom<TradeExecution>
     {
@@ -28,6 +28,5 @@ namespace Firewatch.Application.Investments.Queries.GetTradeExecutions
         public CostModel Commissions { get; set; }
 
         public CostModel Fees { get; set; }
-
     }
 }

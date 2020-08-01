@@ -15,8 +15,9 @@ namespace Firewatch.WebUI
         /// </summary>
         /// <param name="input">The string containing a date representation.</param>
         /// <param name="format">What format the string is in. Default is yyyyMMdd.</param>
+        /// <param name="behaviour>Whether the returned <see cref="DateTIme"/> should be at the start or end of the target day.</param>
         /// <returns></returns>
-        public static DateTime ToDate(this string input, string format = "yyyyMMdd")
+        public static DateTime ToDate(this string input, string format = "yyyyMMdd", DateTimeBehaviours behaviour = DateTimeBehaviours.Default)
         {
             DateTime date;
 
@@ -25,7 +26,21 @@ namespace Firewatch.WebUI
                 date = DateTime.MinValue;
             }
 
+            switch (behaviour)
+            {
+                case DateTimeBehaviours.StartOfDay:
+                    date = new DateTime(date.Year, date.Month, date.Day, 0, 0, 0);
+                    break;
+                case DateTimeBehaviours.EndOfDay:
+                    date = new DateTime(date.Year, date.Month, date.Day, 23, 59, 59);
+                    break;
+                default:
+                    break;
+            }
+
             return date;
         }
+
+
     }
 }

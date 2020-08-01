@@ -46,8 +46,34 @@ namespace Firewatch.Application.Investments.Queries.GetStats
 
             var executions = await query.ToListAsync();
 
+            var trades = _tradeFactory.ConstructTradesFromExecutions(executions);
+                //.GroupBy(t => t.Close.DayOfWeek);
 
-            var intradayTrades = _tradeFactory.ConstructTradesFromExecutions(executions);
+
+            var winners = trades
+                .Where(t => t.NetProfitAndLoss > 0)
+                .OrderByDescending(t => t.NetProfitAndLoss);
+
+            var biggestWinner = trades.FirstOrDefault();
+
+            var averageWinningAmount = winners
+                .Select(t => t.NetProfitAndLoss)
+                .Average();
+
+
+
+            var losers = trades
+                .Where(t => t.NetProfitAndLoss < 0)
+                .OrderBy(t => t.NetProfitAndLoss);
+
+            var biggestLoser = losers.FirstOrDefault();
+
+            var averageLosingAmount = losers
+                .Select(t => t.NetProfitAndLoss)
+                .Average();
+
+            var losingTrades = losers.Count();
+
 
             // daily view
             foreach (var dow in Enum.GetValues(typeof(DayOfWeek)).OfType<DayOfWeek>())

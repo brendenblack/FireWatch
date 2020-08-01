@@ -1,8 +1,8 @@
 <div class="card">
-    <h3 class="card-header">
-        {{ monthName }}
+    <h3 class="card-header text-center">
+        {{ monthName }} {{ year }}
     </h3>
-    <table class="table table-bordered calendar" [ngClass]="{ 'calendar-sm table-sm': small }">
+    <table class="table table-bordered calendar mb-0" [ngClass]="{ 'calendar-sm table-sm': small }">
         <thead>
             <tr class="day-names">
                 <th scope="col">Sun</th>
@@ -21,10 +21,10 @@
                     <div *ngIf="!small">
                         <div *ngIf="calendarCell.date !== null">
                             <div *ngIf="calendarCell.journal !== null">
-                                <a [routerLink]="['/trades/journal/', calendarCell.date.getFullYear(), (calendarCell.date.getMonth() + 1), calendarCell.date.getDate() ]">
-                                    {{ calendarCell.journal.totalProfitAndLoss(true) | currency: 'USD' }}
+                                <a [routerLink]="['/markets/', accountId, 'journal', calendarCell.date.getFullYear(), (calendarCell.date.getMonth() + 1), calendarCell.date.getDate() ]">
+                                    {{ calendarCell.journal.pnl | currency: 'USD' }}
                                     <br />
-                                    {{ calendarCell.journal.totalTrades() + ' trades'}}
+                                    {{ calendarCell.journal.trades.length + ' trades'}}
                                 </a>
                             </div>
                         </div>
