@@ -15,7 +15,8 @@ import { JournalMonth2Component } from './pages/journal-month2/journal-month2.co
 import { MarketsRoutingModule } from './markets-routing.module';
 import { MarketsHomeComponent } from './pages/markets-home/markets-home.component';
 import { RouterModule } from '@angular/router';
-
+import { AverageReturnComponent } from './components/average-return/average-return.component';
+import { ChartsModule } from 'ng2-charts';
 
 @NgModule({
   declarations: [
@@ -29,12 +30,13 @@ import { RouterModule } from '@angular/router';
     JournalDayComponent, 
     TradesTestComponent, 
     JournalMonth2Component, 
-    MarketsHomeComponent
+    MarketsHomeComponent, AverageReturnComponent
   ],
   imports: [
     CommonModule,
     MarketsRoutingModule,
     ReactiveFormsModule,
+    ChartsModule
   ],
   providers: [
     TradesService

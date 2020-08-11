@@ -1,0 +1,21 @@
+<div class="container">
+    <div>{{ title}}: {{ averageReturn | currency: 'USD' }}</div>
+    <div>
+
+    </div>
+</div>
+
+
+<script src="node_modules/chart.js/src/chart.js"></script>
+
+<div style="display: block;">
+    <canvas baseChart height="53" width="350"
+      [datasets]="areaChartData"
+      [legend]="areaChartLegend"
+      [options]="areaChartOptions"
+      [colors]="areaChartColors"
+      
+      [chartType]="areaChartType"
+      [plugins]="areaChartPlugins">
+    </canvas>
+  </div>

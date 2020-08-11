@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { ParseAndImportTradesResponse, InvestmentsClient, TradeExecutionDto } from 'src/app/firewatch-api';
+import { ParseAndImportTradesResponse, InvestmentsClient, TradeExecutionDto, TradeDto } from 'src/app/firewatch-api';
 import { ModuleMapNgFactoryLoader } from '@nguniversal/module-map-ngfactory-loader';
 import * as moment from 'moment';
 import { reduce } from 'rxjs/operators';
 import { JournalEntry, JournalSymbol } from '../../models/journal';
 import { TradesService } from '../../services/tradesService';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
-class JournalViewModel {
-  entries: JournalEntry[] = [];
+
+interface Filter {
+  display: string;
+  value: string;
 }
-
-
 
 @Component({
   selector: 'app-journal',
@@ -19,64 +20,46 @@ class JournalViewModel {
 })
 export class JournalComponent implements OnInit {
 
-  debug = true;
-
-  vm = new JournalViewModel();
-
-  journalEntries: JournalEntry[] = [];
+  public radioGroupForm: FormGroup;
   
-  constructor(private investmentsClient: InvestmentsClient, private tradesService: TradesService) { 
+  constructor(private client: InvestmentsClient, private formBuilder: FormBuilder) { 
   }
 
-  ngOnInit(): void {
-      const date = new Date(2020,2,16);
-      this.tradesService.fetchJournalForDates(date, date)
-      .subscribe(journal => { 
-        console.log(journal);
-        this.journalEntries = journal;
+  allTrades: TradeDto[] = [];
+
+  trades: TradeDto[] = [];
+
+  winners: TradeDto[] = [];
+
+  losers: TradeDto[] = [];
+
+  vehicleFilter: 'STOCK' | 'OPTION' | undefined;
+
+  vehicleFilters: Filter[] = [ 
+    { display: 'Stock', value: 'STOCK' }, 
+    { display: 'Option', value: 'OPTION' },
+    { display: 'None', value: undefined }
+  ];
+
+   ngOnInit(): void {
+
+      this.loadTrades();
+  }
+
+  daysToRetrieve = 30;
+
+  loadTrades() {
+
+    const from = moment(new Date()).subtract(this.daysToRetrieve, 'day');
+    const to = moment(new Date());
+
+    this.client.getTradesForAccount(1, from.format('YYYYMMDD'), to.format('YYYYMMDD'))
+      .subscribe(vm => {
+        console.log('Retrieved trades', vm.trades);
+        this.allTrades = vm.trades;
+        this.trades = vm.trades.sort((a, b) => b.close.valueOf() - a.close.valueOf());
+        this.losers = vm.trades.filter(t => t.netProfitAndLoss < 0);
+        this.winners = vm.trades.filter(t => t.netProfitAndLoss > 0);
       });
-      
-      // this.tradesService.fetchJournalForDates(new Date(new Date().setDate(new Date().getDate() - 7 )), new Date())
-      //   .subscribe(journal => console.log(journal));
   }
-
-  // fetchExecutionsBetween(from: Date, to: Date) {
-    
-  //   const fromAsString = moment(from).format("yyyyMMDD");
-  //   const toAsString = moment(to).format('yyyyMMDD');
-    
-  //   console.log(`Retrieving executions between ${fromAsString} and ${toAsString}`);
-  //   this.investmentsClient.getExecutions(fromAsString, toAsString)
-  //     .subscribe(result => {
-  //       console.log('Returned executions', result);
-        
-  //       // clear existing data
-  //       const vm = new JournalViewModel();
-
-  //       // TODO: is there a less shit way to do this?
-  //       const dates = Array.from(new Set(result.executions.map(e => moment(e.date).format('YYYY-MM-DD'))))
-  //         .map(d => moment(d))
-  //         .sort((a, b) => { return b.valueOf() - a.valueOf() }); 
-
-  //       for (let date of dates) {
-  //         const dateKey = date.format('yyyy-MM-DD');
-
-  //         const entry = new JournalEntry(date);
-
-  //         const executionsOnDate = result.executions.filter(e => moment(e.date).isSame(date, 'day'));
-
-  //         for (let symbol of new Set(executionsOnDate.map(e => e.symbol))) {
-  //           const journalSymbol = new JournalSymbol(symbol);
-  //           const executions = executionsOnDate.filter(e => e.symbol === symbol);
-  //           journalSymbol.executions = executions;
-  //           entry.symbols.push(journalSymbol);
-  //         }
-  //         vm.entries.push(entry);
-  //       }
-
-  //       this.vm = vm;
-
-  //       console.log('View model', this.vm);
-  //     });
-  // }
 }

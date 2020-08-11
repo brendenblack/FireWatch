@@ -1,4 +1,56 @@
 
+<div class="row">
+    <div class="col">
+        <app-average-return [trades]="trades" [title]="'Average Return'"></app-average-return>
+    </div>
+    <div class="col">
+        <app-average-return [trades]="winners" [title]="'Average Winner'"></app-average-return>
+    </div>
+    <div class="col">
+        <app-average-return [trades]="losers" [title]="'Average Loser'"></app-average-return>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+
+        </tr>
+    </thead>
+    <tbody *ngFor="let trade of trades">
+        <tr>
+            <td>
+                <span *ngIf="trade.vehicle === 'STOCK'" class="badge badge-primary">Stock</span>
+                <span *ngIf="trade.vehicle === 'OPTION'" class="badge badge-secondary">Option</span>
+            </td>
+            <td>{{ trade.close.format('MMM DD, yyyy') }}</td>
+            <td>{{ trade.symbol }}</td>
+            <td class="text-right">{{ trade.averageEntry | currency: 'USD' }}</td>
+            <td class="text-right">{{ trade.averageExit | currency: 'USD' }}</td>
+            <td class="text-right">{{ trade.volume }}</td>
+            <td>
+                <span *ngIf="trade.side === 'LONG'" class="badge badge-primary">LONG</span>
+                <span *ngIf="trade.side === 'SHORT'" class="badge badge-secondary">SHORT</span>
+            </td>
+            <td>
+                <span *ngIf="!trade.isClosed" class="badge badge-secondary">OPEN</span>
+                <span *ngIf="trade.isClosed && trade.netProfitAndLoss >= 0" class="badge badge-success">WIN</span>
+                <span *ngIf="trade.isClosed && trade.netProfitAndLoss < 0" class="badge badge-danger">LOSS</span>
+            </td>
+            <td class="text-right" [ngClass]="{ 'text-danger': trade.netProfitAndLoss < 0 }"><strong>{{ trade.netProfitAndLoss | currency: 'USD' }}</strong></td>
+            <td class="text-right" [ngClass]="{ 'text-danger': trade.netProfitAndLoss < 0 }">{{ trade.percentReturn | percent: '1.0-2' }}</td>
+        </tr>
+        <!-- <tr *ngFor="let execution of trade.executions">
+            <td>{{ execution.date }}</td>
+            <td>{{ execution.action }}</td>
+            <td>{{ execution.actionType }}</td>
+            <td>{{ execution.unitPrice.amount | currency: 'USD' }}</td>
+            <td>{{ execution.quantity }}</td>
+        </tr> -->
+    </tbody>
+</table>
+
+<!-- 
 <app-journal-entry *ngFor="let entry of journalEntries" [journal]="entry"></app-journal-entry>
 
 <div *ngFor="let entry of journalEntries">
@@ -39,7 +91,7 @@
         </table>
     </div>
 
-</div>
+</div> -->
 
 
 <!-- <div *ngFor="let item of vm | keyvalue">

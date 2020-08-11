@@ -23,7 +23,9 @@
           <li *ngIf="isAuthenticated" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/markets']">Markets</a>
           </li>
-
+          <li *ngIf="isAuthenticated" class="nav-item" [routerLinkActive]="['link-active']">
+            <a class="nav-link text-dark" [routerLink]="['/markets/journal']">Journal</a>
+          </li>
           <li *ngIf="isAuthenticated" class="nav-item" [routerLinkActive]="['link-active']">
             <a class="nav-link text-dark" [routerLink]="['/markets/1/calendar/2020/7']">Calendar</a>
           </li>

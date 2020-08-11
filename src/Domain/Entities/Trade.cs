@@ -80,12 +80,12 @@ namespace Firewatch.Domain.Entities
         /// Total returns from this trade, including fees and commissions.
         /// </summary>
         /// <remarks></remarks>
-        public decimal NetProfitAndLoss => CalculateProfitAndLoss(true, true);
+        public decimal NetProfitAndLoss => (IsClosed) ? CalculateProfitAndLoss(true, true) : 0;
        
         /// <summary>
         /// Total returns from this trade, before fees and commissions.
         /// </summary>
-        public decimal GrossProfitAndLoss => CalculateProfitAndLoss(false, false);
+        public decimal GrossProfitAndLoss => (IsClosed) ? CalculateProfitAndLoss(false, false) : 0;
 
         public IEnumerable<TradeExecution> Executions { get; } = new List<TradeExecution>();
 
