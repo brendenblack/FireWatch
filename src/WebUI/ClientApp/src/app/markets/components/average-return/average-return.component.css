@@ -5,6 +5,11 @@
     margin-right:auto;
 }
 
-.container {
+.returnContainer {
     display: flex;
+    height: 218px;
+}
+
+.chartContainer {
+    flex-grow: 1;
 }

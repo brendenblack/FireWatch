@@ -52,36 +52,9 @@ namespace Firewatch.Application.Investments.Queries.GetTrades
                 .Where(t => t.AccountId == request.AccountId)
                 .Where(t => t.Date >= request.From)
                 .Where(t => t.Date <= request.To)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             var trades = _tradeFactory.ConstructTradesFromExecutions(executions);
-
-            //var groupedExecutions = executions
-            //    .GroupBy(t => t.Symbol)
-            //    .Select(g => new { Symbol = g.Key, Executions = g.AsEnumerable() });
-
-            //var trades = new List<Trade>();
-            //foreach (var group in groupedExecutions)
-            //{
-            //    var trade = new Trade(group.Symbol);
-            //    trades.Add(trade);
-            //    foreach (var execution in group.Executions)
-            //    {
-            //        if (trade.Executions.Count() == 0 || trade.State == TradeState.OPEN)
-            //        {
-            //            trade.AddExecutions(execution);
-            //        }
-            //        else
-            //        {
-            //            trades.Add(trade);
-            //            trade = new Trade(group.Symbol);
-            //            trade.AddExecutions(execution);
-            //        }
-            //    }
-            //}
-
-            
-
 
             return new GetTradesVm
             {

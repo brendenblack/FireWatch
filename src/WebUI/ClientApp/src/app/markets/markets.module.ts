@@ -17,6 +17,7 @@ import { MarketsHomeComponent } from './pages/markets-home/markets-home.componen
 import { RouterModule } from '@angular/router';
 import { AverageReturnComponent } from './components/average-return/average-return.component';
 import { ChartsModule } from 'ng2-charts';
+import { RunningReturnComponent } from './components/running-return/running-return.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import { ChartsModule } from 'ng2-charts';
     JournalDayComponent, 
     TradesTestComponent, 
     JournalMonth2Component, 
-    MarketsHomeComponent, AverageReturnComponent
+    MarketsHomeComponent, AverageReturnComponent, RunningReturnComponent
   ],
   imports: [
     CommonModule,
