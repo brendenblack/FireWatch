@@ -1,5 +1,8 @@
-﻿using Firewatch.Domain.Entities;
+﻿using Firewatch.Application.Common.Interfaces;
+using Firewatch.Domain.Entities;
 using Firewatch.Infrastructure.Identity;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +18,18 @@ namespace Firewatch.Infrastructure.Persistence
             if (userManager.Users.All(u => u.UserName != defaultUser.UserName))
             {
                 await userManager.CreateAsync(defaultUser, "Administrator1!");
+            }
+        }
+
+        public static async Task SeedClients(ConfigurationDbContext context)
+        {
+            if (!context.Clients.Any())
+            {
+                foreach (var client in Config.Clients)
+                {
+                    context.Clients.Add(client.ToEntity());
+                }
+                await context.SaveChangesAsync();
             }
         }
 

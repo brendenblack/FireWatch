@@ -1,4 +1,4 @@
-﻿{
+{
   "runtime": "NetCore31",
   "defaultVariables": null,
   "documentGenerator": {
@@ -48,6 +48,7 @@
       "allowNullableBodyParameters": true,
       "output": "wwwroot/api/specification.json",
       "outputType": "OpenApi3",
+      "newLineBehavior": "Auto",
       "assemblyPaths": [],
       "assemblyConfig": null,
       "referencePaths": [],
@@ -60,7 +61,7 @@
       "moduleName": "",
       "namespace": "",
       "typeScriptVersion": 2.7,
-      "template": "Angular",
+      "template": "Fetch",
       "promiseType": "Promise",
       "httpClass": "HttpClient",
       "withCredentials": false,
@@ -75,14 +76,14 @@
       "exportTypes": true,
       "wrapDtoExceptions": false,
       "exceptionClass": "SwaggerException",
-      "clientBaseClass": null,
+      "clientBaseClass": "AuthApiBase",
       "wrapResponses": false,
       "wrapResponseMethods": [],
       "generateResponseClasses": true,
       "responseClass": "SwaggerResponse",
       "protectedMethods": [],
-      "configurationClass": null,
-      "useTransformOptionsMethod": false,
+      "configurationClass": "",
+      "useTransformOptionsMethod": true,
       "useTransformResultMethod": false,
       "generateDtoTypes": true,
       "operationGenerationMode": "MultipleClientsFromOperationId",
@@ -93,7 +94,7 @@
       "useLeafType": false,
       "classTypes": [],
       "extendedClasses": [],
-      "extensionCode": null,
+      "extensionCode": "../ReactClient/src/firewatch-service.extensions.ts",
       "generateDefaultValues": true,
       "excludedTypeNames": [],
       "excludedParameterNames": [],
@@ -106,13 +107,14 @@
       "queryNullValue": "",
       "inlineNamedDictionaries": false,
       "inlineNamedAny": false,
-      "templateDirectory": null,
+      "templateDirectory": "nswag-templates/",
       "typeNameGeneratorType": null,
       "propertyNameGeneratorType": null,
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "ClientApp/src/app/firewatch-api.ts"
+      "output": "../ReactClient/src/firewatch-service.g.ts",
+      "newLineBehavior": "Auto"
     }
   }
 }

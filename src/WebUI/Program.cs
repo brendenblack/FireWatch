@@ -1,5 +1,6 @@
 using Firewatch.Infrastructure.Identity;
 using Firewatch.Infrastructure.Persistence;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,9 +32,12 @@ namespace Firewatch.WebUI
                     }                   
 
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    //var configDb = services.GetRequiredService<ConfigurationDbContext>();
 
+                    //await ApplicationDbContextSeed.SeedClients(configDb);
                     await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager);
                     await ApplicationDbContextSeed.SeedSampleDataAsync(context);
+                    
                 }
                 catch (Exception ex)
                 {
