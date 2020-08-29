@@ -9,27 +9,29 @@ using System.Threading.Tasks;
 
 namespace Firewatch.Infrastructure.Identity
 {
-    public class IdentityService : IIdentityService
+    public class IdentityServer4IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
         private readonly INewUserService _newUserService;
 
-        public IdentityService(
-            UserManager<ApplicationUser> userManager, 
+        public IdentityServer4IdentityService(
+            //UserManager<ApplicationUser> userManager, 
             ApplicationDbContext context,
             INewUserService newUserService)
         {
-            _userManager = userManager;
+            //_userManager = userManager;
             _context = context;
             _newUserService = newUserService;
         }
 
         public async Task<string> GetUserNameAsync(string userId)
         {
-            var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+            return userId;
 
-            return user.UserName;
+            //var user = await _userManager.Users.FirstAsync(u => u.Id == userId);
+
+            //return user.UserName;
         }
         public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
         {

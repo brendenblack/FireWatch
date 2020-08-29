@@ -4,7 +4,6 @@ import "./tailwind.output.css"
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './authorization/AuthContext';
 
 ReactDOM.render(
   <React.StrictMode>

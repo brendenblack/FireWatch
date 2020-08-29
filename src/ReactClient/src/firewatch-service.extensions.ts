@@ -1,13 +1,24 @@
 import * as generated from './firewatch-service.g';
-import { useAuthState } from "./authorization/AuthContext";
+import { useAuthState } from "./authentication/AuthContext";
+import AuthService from './authentication/authService';
+import { env } from 'process';
 
 export class AuthApiBase {
     protected transformOptions(options: RequestInit): Promise<RequestInit> {
-        const token = useAuthState().user?.access_token
-        if (token) {
-            options.headers = { ...options.headers, authorization: `Bearer ${token}` }
-        }
+        // const authState = useAuthState();
+        const authService = new AuthService();
+        return authService.getUser().then(user => {
+            
 
-        return Promise.resolve(options);
+            if (user) {
+                options.headers = { ...options.headers, authorization: `Bearer ${user.access_token}` };
+            } 
+
+            return Promise.resolve(options);
+        })
+    }
+
+    protected getBaseUrl(something: string, defaultUrl: string | undefined): string {
+        return process.env.REACT_APP_API_URL ?? defaultUrl ?? something;
     }
 }

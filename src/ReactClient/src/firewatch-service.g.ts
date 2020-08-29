@@ -8,17 +8,28 @@
 // ReSharper disable InconsistentNaming
 // https://github.com/RicoSuter/NSwag/pull/1901
 
-import { useAuthState } from "./authorization/AuthContext";
+import { useAuthState } from "./authentication/AuthContext";
+import AuthService from './authentication/authService';
+import { env } from 'process';
 import moment from 'moment';
 
 export class AuthApiBase {
     protected transformOptions(options: RequestInit): Promise<RequestInit> {
-        const token = useAuthState().user?.access_token
-        if (token) {
-            options.headers = { ...options.headers, authorization: `Bearer ${token}` }
-        }
+        // const authState = useAuthState();
+        const authService = new AuthService();
+        return authService.getUser().then(user => {
+            
 
-        return Promise.resolve(options);
+            if (user) {
+                options.headers = { ...options.headers, authorization: `Bearer ${user.access_token}` };
+            } 
+
+            return Promise.resolve(options);
+        })
+    }
+
+    protected getBaseUrl(something: string, defaultUrl: string | undefined): string {
+        return process.env.REACT_APP_API_URL ?? defaultUrl ?? something;
     }
 }
 
@@ -35,7 +46,7 @@ export class AccountsClient extends AuthApiBase implements IAccountsClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : "";
+        this.baseUrl = this.getBaseUrl("", baseUrl);
     }
 
     getAccounts(): Promise<AccountsVm> {
@@ -128,7 +139,7 @@ export class InvestmentsClient extends AuthApiBase implements IInvestmentsClient
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : "";
+        this.baseUrl = this.getBaseUrl("", baseUrl);
     }
 
     importTrades(model: ParseTradesModel): Promise<ParseAndImportTradesResponse> {
@@ -353,7 +364,7 @@ export class TodoItemsClient extends AuthApiBase implements ITodoItemsClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : "";
+        this.baseUrl = this.getBaseUrl("", baseUrl);
     }
 
     create(command: CreateTodoItemCommand): Promise<number> {
@@ -533,7 +544,7 @@ export class TodoListsClient extends AuthApiBase implements ITodoListsClient {
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : "";
+        this.baseUrl = this.getBaseUrl("", baseUrl);
     }
 
     get(): Promise<TodosVm> {
@@ -740,7 +751,7 @@ export class WeatherForecastClient extends AuthApiBase implements IWeatherForeca
     constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
         super();
         this.http = http ? http : <any>window;
-        this.baseUrl = baseUrl ? baseUrl : "";
+        this.baseUrl = this.getBaseUrl("", baseUrl);
     }
 
     get(): Promise<WeatherForecast[]> {

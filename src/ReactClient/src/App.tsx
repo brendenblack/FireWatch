@@ -1,28 +1,48 @@
 import React from 'react';
-import { Route, Switch, NavLink, Router } from 'react-router-dom';
-import cx from "classnames"
+import { AuthProvider } from './authentication/AuthContext';
+import UnauthenticatedApp from './UnauthenticatedApp';
+import { Navbar } from './common/Navbar';
+import { Switch, Route } from 'react-router-dom';
+import { PrivateRoute } from './authentication/PrivateRoute';
+import { LoginCallback } from './authentication/LoginCallback';
+import { LogoutCallback } from './authentication/LogoutCallback';
+import { SilentRenew } from './authentication/SilentRenew';
+import { Logout } from './pub/Logout';
+import { LoginPage } from './pub/LoginPage';
 import { HomePage } from './pub/home/HomePage';
-import IndexPage from './features/markets/pages/MarketsIndex';
-import PrivateRoute from './authorization/PrivateRoute';
-import { useAuthState } from './authorization/AuthContext';
-
+import SecTest from './sec/SecTest';
 
 
 function App() {
-	const [ isOpen, setOpen] = React.useState<boolean>(false);
+	// const authService = new AuthService();
+	// const AuthenticatedApp = React.lazy(() => import('./AuthenticatedApp'));
+	// const UnauthenticatedApp = React.lazy(() => import('./UnauthenticatedApp'));
 
-	const routes = [
-		{ path: '/', isExact: true, title: 'Home', component: HomePage, isPublic: true },
-		{ path: '/investments', isExact: false, title: 'Investments', component: IndexPage }
-	]
+	return (
+		<AuthProvider>
+			 <div className="min-h-screen">
+            <Navbar />
+            
+            <div className="h-screen" style={{ paddingTop: '54px', marginTop: '-54px' }}>
+                <Switch>
+                    <Route exact path="/signin-oidc" component={LoginCallback} />
+                    <Route exact path="/silent" component={SilentRenew} />
+					<Route exact path="/logout" component={Logout} />
+					<Route exact path="/logout/callback" component={LogoutCallback} />   
+                    <Route path="/" exact component={HomePage} />
+                    <Route path="/login" component={LoginPage} />
+                    <PrivateRoute path="/en/dashboard" component={SecTest} />
+                    {/* <Route path="/demo" component={DemoPage} /> */}
 
-	const AuthenticatedApp = React.lazy(() => import('./AuthenticatedApp'));
-	const UnauthenticatedApp = React.lazy(() => import('./UnauthenticatedApp'));
+                </Switch>
+            </div>
+        </div>
+		</AuthProvider>);
 
-	const { user } = useAuthState();
-	console.log('User', user);
+	// const { user } = useAuthState();
+	// console.log('User', user);
 
-	return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
+	// return user ? <AuthenticatedApp /> : <UnauthenticatedApp />;
 
 	// return (
 	// 	<div>

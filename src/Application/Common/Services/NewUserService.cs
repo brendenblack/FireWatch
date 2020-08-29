@@ -24,10 +24,13 @@ namespace Firewatch.Application.Common.Services
             _context = context;
         }
 
-        public async Task<Result> InitializeNewUser(string personId)
+        public async Task<Result> InitializeNewUser(string personId, CancellationToken cancellationToken)
         {
 
-            _logger.LogInformation("Initializing user {}", personId);
+            _logger.LogInformation("Initializing new person with id {}", personId);
+            _context.People.Add(new Person() { Id = personId });
+            await _context.SaveChangesAsync(cancellationToken);
+
 
             // We have to fetch the Person object from the context we're adding to, otherwise EF
             // will try to save it
@@ -37,7 +40,7 @@ namespace Firewatch.Application.Common.Services
 
             try
             {
-                await _context.SaveChangesAsync(new CancellationToken());
+                await _context.SaveChangesAsync(cancellationToken);
                 _logger.LogDebug("Created cash account {} for user {}",
                     cashAccount.Id,
                     accountOwner.Id);
@@ -59,7 +62,7 @@ namespace Firewatch.Application.Common.Services
             _context.ExpenseCategories.AddRange(household, food);
             try
             {
-                await _context.SaveChangesAsync(new CancellationToken());
+                await _context.SaveChangesAsync(cancellationToken);
             }
             catch (Exception e)
             {

@@ -2,8 +2,8 @@
 using Firewatch.Domain.Common;
 using Firewatch.Domain.Entities;
 using Firewatch.Infrastructure.Identity;
-using IdentityServer4.EntityFramework.Options;
-using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+//using IdentityServer4.EntityFramework.Options;
+//using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace Firewatch.Infrastructure.Persistence
 {
-    public class ApplicationDbContext : ApiAuthorizationDbContext<ApplicationUser>, IApplicationDbContext
+    public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTime _dateTime;
@@ -22,9 +22,9 @@ namespace Firewatch.Infrastructure.Persistence
 
         public ApplicationDbContext(
             DbContextOptions options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions,
+            //IOptions<OperationalStoreOptions> operationalStoreOptions,
             ICurrentUserService currentUserService,
-            IDateTime dateTime) : base(options, operationalStoreOptions)
+            IDateTime dateTime) : base(options)
         {
             _currentUserService = currentUserService;
             _dateTime = dateTime;

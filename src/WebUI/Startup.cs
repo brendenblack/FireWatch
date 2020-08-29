@@ -69,6 +69,17 @@ namespace Firewatch.WebUI
 
                 configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000", "https://localhost:44312")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -106,7 +117,7 @@ namespace Firewatch.WebUI
             }
 
             app.UseRouting();
-
+            app.UseCors();
             app.UseAuthentication();
             //app.UseIdentityServer();
             app.UseAuthorization();

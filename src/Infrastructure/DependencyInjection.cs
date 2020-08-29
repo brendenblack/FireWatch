@@ -3,8 +3,6 @@ using Firewatch.Infrastructure.Files;
 using Firewatch.Infrastructure.Identity;
 using Firewatch.Infrastructure.Persistence;
 using Firewatch.Infrastructure.Services;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,23 +29,29 @@ namespace Firewatch.Infrastructure
 
             services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>());
 
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
-            //    .AddDefaultTokenProviders();
+            //services.AddDefaultIdentity<ApplicationUser>()
+            //        .AddEntityFrameworkStores<ApplicationDbContext>();
 
             //services.AddIdentityServer()
-            //    .AddAspNetIdentity<ApplicationUser>();
+            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
+
+
 
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
                     options.Authority = configuration.GetValue<string>("TokenAuthority");
-
+                    // configuration.GetValue<string>("ApiId");
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
                     };
+                    //options.TokenValidationParameters = new TokenValidationParameters
+                    //{
+                    //    ValidateAudience = false
+                    //};
                 });
+
 
             services.AddAuthorization(options =>
             {
@@ -58,15 +62,8 @@ namespace Firewatch.Infrastructure
                 });
             });
 
-
-            //services.AddDefaultIdentity<ApplicationUser>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-            //services.AddIdentityServer()
-            //    .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
             services.AddTransient<IDateTime, DateTimeService>();
-            services.AddTransient<IIdentityService, IdentityService>();
+            services.AddTransient<IIdentityService, IdentityServer4IdentityService>();
             services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
             services.AddTransient<ITradeParserService, TradeLogTradeParserService>();
 

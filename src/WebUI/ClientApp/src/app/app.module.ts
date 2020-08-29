@@ -35,6 +35,7 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     ApiAuthorizationModule,
     RouterModule.forRoot([
       { path: '', redirectTo: 'splash', pathMatch: 'full' },
+      { path: 'weather', component: FetchDataComponent },
       { path: 'splash', component: HomeComponent },
       { path: 'markets', loadChildren: () => import ('./markets/markets.module').then(m => m.MarketsModule), canActivate: [AuthorizeGuard] },
     ]),
